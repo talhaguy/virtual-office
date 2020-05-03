@@ -1,0 +1,31 @@
+{
+  "name": "virtual-office-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talhaguy/virtual-office-server.git"
+  },
+  "author": "Muhammad Talha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/talhaguy/virtual-office-server/issues"
+  },
+  "homepage": "https://github.com/talhaguy/virtual-office-server#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/node": "^13.13.4",
+    "nodemon": "^2.0.3",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
