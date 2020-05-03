@@ -14,15 +14,15 @@ const db = {
         findByUsername(username: string, callback: Function) {
             callback(null, {
                 id: "12345",
-                username: "talhaguy",
-                password: "mysecurepassword",
+                username: "a@a.com",
+                password: "asdfasdf",
             })
         },
         findById(id: string, callback: Function) {
             callback(null, {
                 id: "12345",
-                username: "talhaguy",
-                password: "mysecurepassword",
+                username: "a@a.com",
+                password: "asdfasdf",
             })
         },
     },
@@ -99,7 +99,7 @@ app.post(
     "/login",
     passport.authenticate("local", { failureRedirect: "/login" }),
     function (req, res) {
-        res.redirect("/restricted")
+        res.redirect("/my-account")
     }
 )
 
@@ -108,7 +108,9 @@ app.post("/logout", function (req, res) {
     res.redirect("/")
 })
 
-app.get("/restricted", ensureLoggedIn(), (_req: Request, res: Response) => {
+app.get("/my-account", ensureLoggedIn(), (_req: Request, res: Response) => {
+    console.log("in /restricted; user ", _req.user)
+
     return res.send(`
     <html>
     <body>
@@ -119,6 +121,12 @@ app.get("/restricted", ensureLoggedIn(), (_req: Request, res: Response) => {
     </body>
     </html>
     `)
+})
+
+app.post("/isLoggedIn", function (req, res) {
+    return res.json({
+        loggedIn: req.isAuthenticated(),
+    })
 })
 
 app.listen(port, (err) => {
