@@ -1,4 +1,5 @@
-import express, { Request, Response } from "express"
+import dotenv from "dotenv"
+import express from "express"
 import expressSession from "express-session"
 import passport from "passport"
 import { Strategy } from "passport-local"
@@ -6,130 +7,66 @@ import { urlencoded } from "body-parser"
 import { ensureLoggedIn } from "connect-ensure-login"
 import morgan from "morgan"
 
+import {
+    loginGetHandler,
+    loginPostHandler,
+    logoutHandler,
+    isLoggedInHandler,
+} from "./loginRouteHandlers"
+import { verifyFunction, serializeUser, deserializeUser } from "./localStrategy"
+import { myAccountPageHandler } from "./accountRouteHandlers"
+import { homepageHandler } from "./homepageRouteHandlers"
+
+// MARK: Environment variable config
+
+dotenv.config()
+
+// MARK: Set up express
+
 const app = express()
-const port = process.env.PORT || "8000"
-
-const db = {
-    users: {
-        findByUsername(username: string, callback: Function) {
-            callback(null, {
-                id: "12345",
-                username: "a@a.com",
-                password: "asdfasdf",
-            })
-        },
-        findById(id: string, callback: Function) {
-            callback(null, {
-                id: "12345",
-                username: "a@a.com",
-                password: "asdfasdf",
-            })
-        },
-    },
-}
-
-passport.use(
-    new Strategy(function (username, password, cb) {
-        console.log("In local strategy; got ", username, password)
-
-        db.users.findByUsername(username, function (err: any, user: any) {
-            if (err) {
-                return cb(err)
-            }
-            if (!user) {
-                return cb(null, false)
-            }
-            if (user.password != password) {
-                return cb(null, false)
-            }
-            return cb(null, user)
-        })
-    })
-)
-
-passport.serializeUser(function (user: any, cb: Function) {
-    console.log("In serializeUser")
-
-    cb(null, user.id)
-})
-
-passport.deserializeUser(function (id: string, cb: Function) {
-    console.log("In deserializeUser; id ", id)
-
-    db.users.findById(id, function (err: any, user: any) {
-        if (err) {
-            return cb(err)
-        }
-        cb(null, user)
-    })
-})
-
 app.use(morgan("combined"))
 app.use(urlencoded({ extended: true }))
 app.use(
     expressSession({
-        secret: "keyboard cat",
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
     })
 )
+
+// MARK: Setup Passport
+
+passport.use(new Strategy(verifyFunction))
+passport.serializeUser(serializeUser)
+passport.deserializeUser(deserializeUser)
+
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.get("/", (_req: Request, res: Response) => {
-    return res.send(`Home page 🤓`)
-})
+// MARK: Configure route handlers
 
-app.get("/login", function (req, res) {
-    res.send(`
-    <html>
-    <body>
-    Log in:
-    <form action="/login" method="POST">
-    username: <input type="text" name="username"><br>
-    password: <input type="text" name="password"><br>
-    <button type="submit">Submit</button>
-    </form>
-    </body>
-    </html>
-    `)
-})
+app.get("/", homepageHandler)
+
+app.get("/login", loginGetHandler)
 
 app.post(
     "/login",
     passport.authenticate("local", { failureRedirect: "/login" }),
-    function (req, res) {
-        res.redirect("/my-account")
-    }
+    loginPostHandler
 )
 
-app.post("/logout", function (req, res) {
-    req.logout()
-    res.redirect("/")
-})
+app.post("/logout", logoutHandler)
 
-app.get("/my-account", ensureLoggedIn(), (_req: Request, res: Response) => {
-    console.log("in /restricted; user ", _req.user)
+app.get("/my-account", ensureLoggedIn(), myAccountPageHandler)
 
-    return res.send(`
-    <html>
-    <body>
-    Log out:
-    <form action="/logout" method="POST">
-    <button type="submit">Log out</button>
-    </form>
-    </body>
-    </html>
-    `)
-})
+app.post("/isLoggedIn", isLoggedInHandler)
 
-app.post("/isLoggedIn", function (req, res) {
-    return res.json({
-        loggedIn: req.isAuthenticated(),
-    })
-})
+// MARK: Start server
 
-app.listen(port, (err) => {
-    if (err) return console.error(err)
-    return console.log(`Server is listening on ${port}`)
+app.listen(process.env.PORT, (err) => {
+    if (err) {
+        return console.error(err)
+    }
+
+    return console.log(`Server is listening on ${process.env.PORT}`)
 })
