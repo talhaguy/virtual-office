@@ -6,6 +6,7 @@ import { Strategy } from "passport-local"
 import { urlencoded } from "body-parser"
 import { ensureLoggedIn } from "connect-ensure-login"
 import morgan from "morgan"
+import mongoose from "mongoose"
 
 import {
     loginGetHandler,
@@ -16,10 +17,15 @@ import {
 import { verifyFunction, serializeUser, deserializeUser } from "./localStrategy"
 import { myAccountPageHandler } from "./accountRouteHandlers"
 import { homepageHandler } from "./homepageRouteHandlers"
+import { connect } from "./database"
 
 // MARK: Environment variable config
 
 dotenv.config()
+
+// MARK: Database start
+
+connect(mongoose)
 
 // MARK: Set up express
 
@@ -46,19 +52,15 @@ app.use(passport.session())
 // MARK: Configure route handlers
 
 app.get("/", homepageHandler)
-
 app.get("/login", loginGetHandler)
+app.get("/my-account", ensureLoggedIn(), myAccountPageHandler)
 
 app.post(
     "/login",
     passport.authenticate("local", { failureRedirect: "/login" }),
     loginPostHandler
 )
-
 app.post("/logout", logoutHandler)
-
-app.get("/my-account", ensureLoggedIn(), myAccountPageHandler)
-
 app.post("/isLoggedIn", isLoggedInHandler)
 
 // MARK: Start server
