@@ -1,5 +1,7 @@
 import { VerifyFunction } from "passport-local"
 import { User } from "./models/User"
+import { UserModel } from "./database"
+import { Document } from "mongoose"
 
 const mockUser = {
     id: "12345",
@@ -10,19 +12,30 @@ const mockUser = {
 export const verifyFunction: VerifyFunction = (username, password, done) => {
     console.log("In local strategy; got ", username, password)
 
-    // TODO: get user from db using username and authenticate
-    done(null, mockUser)
+    UserModel.findOne({ username })
+        .then((user) => {
+            if (user.password === password) {
+                done(null, user)
+            } else {
+                done(null, false, {
+                    message: "Wong password",
+                })
+            }
+        })
+        .catch((err: any) => {
+            done(null, false, {
+                message: "User not found",
+            })
+        })
 }
 
 interface SerializeUser {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (user: User, done: (err: any, id?: string) => void): void
+    (user: User & Document, done: (err: any, id?: string) => void): void
 }
 
 export const serializeUser: SerializeUser = (user, cb) => {
-    console.log("In serializeUser")
-
-    cb(null, user.id)
+    cb(null, user._id)
 }
 
 interface DeserializeUser {
@@ -33,6 +46,11 @@ interface DeserializeUser {
 export const deserializeUser: DeserializeUser = (id, cb) => {
     console.log("In deserializeUser; id ", id)
 
-    // TODO: get user from db using id
-    cb(null, mockUser)
+    UserModel.findById(id)
+        .then((user) => {
+            cb(null, user)
+        })
+        .catch((err: any) => {
+            cb(new Error("Deserialization failed"))
+        })
 }

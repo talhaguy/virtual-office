@@ -5,10 +5,6 @@ export function loginGetHandler(req: Request, res: Response) {
     res.send("Login")
 }
 
-export function loginPostHandler(req: Request, res: Response) {
-    res.redirect("/my-account")
-}
-
 export function logoutHandler(req: Request, res: Response) {
     req.logout()
     res.redirect("/")

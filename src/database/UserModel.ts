@@ -5,6 +5,10 @@ import { database } from "./db"
 export const UserModel = database.model<User & Document>(
     "User",
     new database.Schema({
-        name: String,
+        username: {
+            type: String,
+            unique: true,
+        },
+        password: String,
     })
 )

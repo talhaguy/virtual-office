@@ -1,2 +1,2 @@
 export { connect, database } from "./db"
-export { UserModel } from "./user"
+export { UserModel } from "./UserModel"

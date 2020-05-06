@@ -3,14 +3,14 @@ import express from "express"
 import expressSession from "express-session"
 import passport from "passport"
 import { Strategy } from "passport-local"
-import { urlencoded } from "body-parser"
+import { urlencoded, json } from "body-parser"
 import { ensureLoggedIn } from "connect-ensure-login"
+import flash from "connect-flash"
 import morgan from "morgan"
 import mongoose from "mongoose"
 
 import {
     loginGetHandler,
-    loginPostHandler,
     logoutHandler,
     isLoggedInHandler,
 } from "./loginRouteHandlers"
@@ -18,6 +18,7 @@ import { verifyFunction, serializeUser, deserializeUser } from "./localStrategy"
 import { myAccountPageHandler } from "./accountRouteHandlers"
 import { homepageHandler } from "./homepageRouteHandlers"
 import { connect } from "./database"
+import { registerHandler } from "./registerRouteHandlers"
 
 // MARK: Environment variable config
 
@@ -32,6 +33,7 @@ connect(mongoose)
 const app = express()
 app.use(morgan("combined"))
 app.use(urlencoded({ extended: true }))
+app.use(json())
 app.use(
     expressSession({
         secret: process.env.SESSION_SECRET,
@@ -39,6 +41,7 @@ app.use(
         saveUninitialized: false,
     })
 )
+app.use(flash())
 
 // MARK: Setup Passport
 
@@ -55,10 +58,14 @@ app.get("/", homepageHandler)
 app.get("/login", loginGetHandler)
 app.get("/my-account", ensureLoggedIn(), myAccountPageHandler)
 
+app.post("/register", registerHandler)
 app.post(
     "/login",
-    passport.authenticate("local", { failureRedirect: "/login" }),
-    loginPostHandler
+    passport.authenticate("local", {
+        successRedirect: "/my-account",
+        failureRedirect: "/login",
+        failureFlash: true,
+    })
 )
 app.post("/logout", logoutHandler)
 app.post("/isLoggedIn", isLoggedInHandler)
