@@ -9,17 +9,17 @@ import flash from "connect-flash"
 import morgan from "morgan"
 import mongoose from "mongoose"
 
+import { verifyFunction, serializeUser, deserializeUser } from "./authorization"
+import { connect } from "./database"
 import {
+    homepageHandler,
+    registerHandler,
     loginGetHandler,
     logoutHandler,
     isLoggedInHandler,
-} from "./loginRouteHandlers"
-import { verifyFunction, serializeUser, deserializeUser } from "./localStrategy"
-import { myAccountPageHandler } from "./accountRouteHandlers"
-import { homepageHandler } from "./homepageRouteHandlers"
-import { connect } from "./database"
-import { registerHandler } from "./registerRouteHandlers"
-import { registrationValidation } from "./middleware/"
+    myAccountPageHandler,
+} from "./routes"
+import { registrationValidation } from "./middleware"
 
 // MARK: Environment variable config
 

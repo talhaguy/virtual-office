@@ -1,13 +1,7 @@
 import { VerifyFunction } from "passport-local"
-import { User } from "./models/User"
-import { UserModel } from "./database"
+import { User } from "../models"
+import { UserModel } from "../database"
 import { Document } from "mongoose"
-
-const mockUser = {
-    id: "12345",
-    username: "a@a.com",
-    password: "asdfasdf",
-}
 
 export const verifyFunction: VerifyFunction = (username, password, done) => {
     console.log("In local strategy; got ", username, password)
@@ -22,7 +16,7 @@ export const verifyFunction: VerifyFunction = (username, password, done) => {
                 })
             }
         })
-        .catch((err: any) => {
+        .catch(() => {
             done(null, false, {
                 message: "User not found",
             })
@@ -50,7 +44,7 @@ export const deserializeUser: DeserializeUser = (id, cb) => {
         .then((user) => {
             cb(null, user)
         })
-        .catch((err: any) => {
+        .catch(() => {
             cb(new Error("Deserialization failed"))
         })
 }

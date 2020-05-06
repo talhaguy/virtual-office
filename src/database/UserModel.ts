@@ -1,5 +1,5 @@
 import { Document } from "mongoose"
-import { User } from "../models/User"
+import { User } from "../models"
 import { database } from "./db"
 
 export const UserModel = database.model<User & Document>(
