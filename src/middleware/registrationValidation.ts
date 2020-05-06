@@ -35,5 +35,7 @@ export function registrationValidation(
         return
     }
 
+    // TODO: hash password
+
     next()
 }
