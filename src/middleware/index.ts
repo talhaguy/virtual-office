@@ -1,0 +1,1 @@
+export { registrationValidation } from "./registrationValidation"

@@ -19,6 +19,7 @@ import { myAccountPageHandler } from "./accountRouteHandlers"
 import { homepageHandler } from "./homepageRouteHandlers"
 import { connect } from "./database"
 import { registerHandler } from "./registerRouteHandlers"
+import { registrationValidation } from "./middleware/"
 
 // MARK: Environment variable config
 
@@ -58,7 +59,7 @@ app.get("/", homepageHandler)
 app.get("/login", loginGetHandler)
 app.get("/my-account", ensureLoggedIn(), myAccountPageHandler)
 
-app.post("/register", registerHandler)
+app.post("/register", registrationValidation, registerHandler)
 app.post(
     "/login",
     passport.authenticate("local", {
