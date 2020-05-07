@@ -7,7 +7,6 @@ import { urlencoded, json } from "body-parser"
 import { ensureLoggedIn } from "connect-ensure-login"
 import flash from "connect-flash"
 import morgan from "morgan"
-import mongoose from "mongoose"
 
 import { verifyFunction, serializeUser, deserializeUser } from "./authorization"
 import { connect } from "./database"
@@ -27,7 +26,7 @@ dotenv.config()
 
 // MARK: Database start
 
-connect(mongoose)
+connect()
 
 // MARK: Set up express
 
