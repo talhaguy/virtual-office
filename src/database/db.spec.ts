@@ -1,78 +1,93 @@
 import { connect, connectionErrorCb, connectionOpenCb } from "./db"
-import mongoose from "mongoose"
-import { mockClearForModuleMock } from "../mocks"
-
-jest.mock("mongoose", () => ({
-    connect: jest.fn(),
-    connection: {
-        on: jest.fn(),
-        once: jest.fn(),
-    },
-}))
+import { Mongoose, Connection } from "mongoose"
+import { mock, resetCalls, instance, verify, deepEqual } from "ts-mockito"
 
 describe("db", () => {
     describe("connect()", () => {
+        const mongooseMock = mock<Mongoose>()
+        const mongooseInstance = instance(mongooseMock)
+
+        const connectionMock = mock<Connection>()
+        const connectionInstance = instance(connectionMock)
+
         const dbPath = "path/to/db"
         const connectionErrorCb = jest.fn()
         const connectionOpenCb = jest.fn()
 
         beforeEach(() => {
-            mockClearForModuleMock(mongoose)
-            mockClearForModuleMock(mongoose.connection)
+            resetCalls(mongooseMock)
+            resetCalls(connectionMock)
+            mongooseInstance.connection = connectionInstance
             connectionErrorCb.mockClear()
             connectionOpenCb.mockClear()
         })
 
         it("should connect to mongodb through mongoose", () => {
-            connect(mongoose, dbPath, connectionErrorCb, connectionOpenCb)
-            expect(mongoose.connect).toBeCalledTimes(1)
-            expect(mongoose.connect).toBeCalledWith(dbPath, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            })
+            connect(
+                mongooseInstance,
+                dbPath,
+                connectionErrorCb,
+                connectionOpenCb
+            )
+            verify(
+                mongooseMock.connect(
+                    dbPath,
+                    deepEqual({
+                        useNewUrlParser: true,
+                        useUnifiedTopology: true,
+                    })
+                )
+            ).once()
         })
 
         it("should run the error callback if there is a connection error", () => {
             const dbPath = "path/to/db"
-            connect(mongoose, dbPath, connectionErrorCb, connectionOpenCb)
-            expect(mongoose.connection.on).toBeCalledTimes(1)
-            expect(mongoose.connection.on).toBeCalledWith(
-                "error",
-                connectionErrorCb
+            connect(
+                mongooseInstance,
+                dbPath,
+                connectionErrorCb,
+                connectionOpenCb
             )
+            verify(connectionMock.on("error", connectionErrorCb)).once()
         })
 
         it("should run the open callback if the connection opens", () => {
             const dbPath = "path/to/db"
-            connect(mongoose, dbPath, connectionErrorCb, connectionOpenCb)
-            expect(mongoose.connection.once).toBeCalledTimes(1)
-            expect(mongoose.connection.once).toBeCalledWith(
-                "open",
+            connect(
+                mongooseInstance,
+                dbPath,
+                connectionErrorCb,
                 connectionOpenCb
             )
+            verify(connectionMock.once("open", connectionOpenCb)).once()
         })
     })
 
     describe("connectionErrorCb()", () => {
+        const consoleMock = mock<Console>()
+        const consoleInstance = instance(consoleMock)
+
+        beforeEach(() => {
+            resetCalls(consoleMock)
+        })
+
         it("should log an error to the console", () => {
-            const consoleErrorSpy = jest
-                .spyOn(console, "error")
-                .mockImplementation(() => jest.fn())
-            connectionErrorCb(console, "some error")
-            expect(consoleErrorSpy).toBeCalledWith(
-                "Connection error: ",
-                "some error"
-            )
+            connectionErrorCb(consoleInstance, "some error")
+            verify(consoleMock.error("Connection error: ", "some error")).once()
         })
     })
 
     describe("connectionOpenCb()", () => {
+        const consoleMock = mock<Console>()
+        const consoleInstance = instance(consoleMock)
+
+        beforeEach(() => {
+            resetCalls(consoleMock)
+        })
+
         it("should log a message to the console", () => {
-            const consoleErrorSpy = jest
-                .spyOn(console, "log")
-                .mockImplementation(() => jest.fn())
-            connectionOpenCb(console)
-            expect(consoleErrorSpy).toBeCalledWith("Connected to DB")
+            connectionOpenCb(consoleInstance)
+            verify(consoleMock.log("Connected to DB")).once()
         })
     })
 })
