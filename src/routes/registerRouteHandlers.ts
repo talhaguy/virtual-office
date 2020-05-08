@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { UserModel } from "../database"
+import { UserModel } from "../databaseModels"
 
 export function registerHandler(req: Request, res: Response) {
     const user = new UserModel({

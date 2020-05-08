@@ -22,5 +22,3 @@ export const connect = connectFactory(
 )
 
 export { database } from "./db"
-
-export { UserModel } from "./UserModel"

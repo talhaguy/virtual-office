@@ -1,6 +1,6 @@
 import { VerifyFunction } from "passport-local"
 import { User } from "../models"
-import { UserModel } from "../database"
+import { UserModel } from "../databaseModels"
 import { Document } from "mongoose"
 
 export const verifyFunction: VerifyFunction = (username, password, done) => {
