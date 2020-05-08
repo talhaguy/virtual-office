@@ -1,4 +1,10 @@
+// MARK: Environment variable config
+
 import dotenv from "dotenv"
+dotenv.config()
+
+// MARK: Imports
+
 import express from "express"
 import expressSession from "express-session"
 import passport from "passport"
@@ -11,18 +17,12 @@ import morgan from "morgan"
 import { verifyFunction, serializeUser, deserializeUser } from "./authorization"
 import { connect } from "./database"
 import {
-    homepageHandler,
+    indexPageHandler,
     registerHandler,
-    loginGetHandler,
     logoutHandler,
     isLoggedInHandler,
-    myAccountPageHandler,
 } from "./routes"
 import { registrationValidation } from "./middleware"
-
-// MARK: Environment variable config
-
-dotenv.config()
 
 // MARK: Database start
 
@@ -31,6 +31,7 @@ connect()
 // MARK: Set up express
 
 const app = express()
+app.use(express.static("public"))
 app.use(morgan("combined"))
 app.use(urlencoded({ extended: true }))
 app.use(json())
@@ -54,9 +55,9 @@ app.use(passport.session())
 
 // MARK: Configure route handlers
 
-app.get("/", homepageHandler)
-app.get("/login", loginGetHandler)
-app.get("/my-account", ensureLoggedIn(), myAccountPageHandler)
+app.get("/", indexPageHandler)
+app.get("/login", indexPageHandler)
+app.get("/my-account", ensureLoggedIn(), indexPageHandler)
 
 app.post("/register", registrationValidation, registerHandler)
 app.post(
