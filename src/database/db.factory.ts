@@ -1,6 +1,5 @@
 import { Mongoose } from "mongoose"
 import { Connect, ConnectionErrorCb, ConnectionOpenCb } from "./db"
-import { Logger } from "../models/Logger"
 
 export function connectFactory(
     connect: Connect,
@@ -16,18 +15,18 @@ export function connectFactory(
 
 export function connectionErrorCbFactory(
     connectionErrorCb: ConnectionErrorCb,
-    logger: Logger
+    console: Console
 ) {
     return (err: any) => {
-        return connectionErrorCb(logger, err)
+        return connectionErrorCb(console, err)
     }
 }
 
 export function connectionOpenCbFactory(
     connectionOpenCb: ConnectionOpenCb,
-    logger: Logger
+    console: Console
 ) {
     return () => {
-        return connectionOpenCb(logger)
+        return connectionOpenCb(console)
     }
 }

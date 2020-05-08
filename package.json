@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "jest --coverage=true",
-        "test:watch": "jest --watch --coverage=true",
+        "test:watch": "jest --watch",
         "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand",
         "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
         "build": "tsc",

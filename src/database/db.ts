@@ -1,5 +1,4 @@
 import mongoose, { Mongoose } from "mongoose"
-import { Logger } from "../models/Logger"
 
 export interface Connect {
     (
@@ -28,22 +27,22 @@ export const connect: Connect = (
 }
 
 export interface ConnectionErrorCb {
-    (logger: Logger, err: any): void
+    (console: Console, err: any): void
 }
 
 export const connectionErrorCb: ConnectionErrorCb = (
-    logger: Logger,
+    console: Console,
     err: any
 ) => {
-    logger.error("Connection error: ", err)
+    console.error("Connection error: ", err)
 }
 
 export interface ConnectionOpenCb {
-    (logger: Logger): void
+    (console: Console): void
 }
 
-export const connectionOpenCb: ConnectionOpenCb = (logger: Logger) => {
-    logger.log("Connected to DB")
+export const connectionOpenCb: ConnectionOpenCb = (console: Console) => {
+    console.log("Connected to DB")
 }
 
 export const database = mongoose
