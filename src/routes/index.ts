@@ -1,11 +1,12 @@
-import { indexPageHandler as _indexPageHandler } from "./indexPageRouteHandler"
 import { Request, Response } from "express"
+import { indexPageHandler as _indexPageHandler } from "./indexPageRouteHandler"
+import { PROJECT_ROOT_PATH, PUBLIC_DIR } from "../constants"
 
 export const indexPageHandler = ((pathToIndex: string) => (
     req: Request,
     res: Response
 ) => _indexPageHandler(pathToIndex, req, res))(
-    `${process.env["ROOT_PROJECT_PATH"]}/${process.env["PUBLIC_DIR"]}/index.html`
+    `${PROJECT_ROOT_PATH}/${PUBLIC_DIR}/index.html`
 )
 
 export { registerHandler } from "./registerRouteHandlers"
