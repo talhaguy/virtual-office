@@ -6,7 +6,7 @@ export function logoutHandler(req: Request, res: Response) {
 }
 
 export function isLoggedInHandler(req: Request, res: Response) {
-    return res.json({
+    res.json({
         loggedIn: req.isAuthenticated(),
     })
 }

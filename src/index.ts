@@ -56,6 +56,7 @@ app.use(passport.session())
 // MARK: Configure route handlers
 
 app.get("/", indexPageHandler)
+app.get("/register", indexPageHandler)
 app.get("/login", indexPageHandler)
 app.get("/my-account", ensureLoggedIn(), indexPageHandler)
 
