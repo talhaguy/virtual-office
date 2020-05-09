@@ -4,8 +4,6 @@ import { UserModel } from "../databaseModels"
 import { Document } from "mongoose"
 
 export const verifyFunction: VerifyFunction = (username, password, done) => {
-    console.log("In local strategy; got ", username, password)
-
     UserModel.findOne({ username })
         .then((user) => {
             if (user.password === password) {
@@ -38,8 +36,6 @@ interface DeserializeUser {
 }
 
 export const deserializeUser: DeserializeUser = (id, cb) => {
-    console.log("In deserializeUser; id ", id)
-
     UserModel.findById(id)
         .then((user) => {
             cb(null, user)

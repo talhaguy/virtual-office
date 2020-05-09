@@ -75,6 +75,7 @@ describe("registerRouteHandlers", () => {
 
         interface UserCbMocks {
             onUserSaveSuccess: (res: Response) => void
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onUserSaveError: (res: Response, err: any) => void
         }
         const userCbMocks = mock<UserCbMocks>()
