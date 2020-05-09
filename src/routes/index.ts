@@ -18,7 +18,6 @@ export const indexPageHandler = ((pathToIndex: string) => (
 export const registerHandler = ((
     createUser: CreateUser,
     onUserSaveSuccess: (res: Response) => void,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onUserSaveError: (res: Response, err: any) => void
 ) => (req: Request, res: Response) =>
     _registerHandler(createUser, onUserSaveSuccess, onUserSaveError, req, res))(

@@ -4,7 +4,6 @@ export interface Connect {
     (
         mongoose: Mongoose,
         dbPath: string,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         connectionErrorCb: (err: any) => void,
         connectionOpenCb: () => void
     ): void
@@ -13,7 +12,6 @@ export interface Connect {
 export const connect: Connect = (
     mongoose: Mongoose,
     dbPath: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectionErrorCb: (err: any) => void,
     connectionOpenCb: () => void
 ) => {
@@ -29,13 +27,11 @@ export const connect: Connect = (
 }
 
 export interface ConnectionErrorCb {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (console: Console, err: any): void
 }
 
 export const connectionErrorCb: ConnectionErrorCb = (
     console: Console,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     err: any
 ) => {
     console.error("Connection error: ", err)

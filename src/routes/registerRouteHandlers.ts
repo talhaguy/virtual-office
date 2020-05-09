@@ -5,7 +5,6 @@ export function onUserSaveSuccess(res: Response) {
     res.redirect("/login")
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function onUserSaveError(res: Response, err: any) {
     if (err.code === 11000) {
         res.status(400).send({
@@ -23,7 +22,6 @@ export function onUserSaveError(res: Response, err: any) {
 export function registerHandler(
     createUser: CreateUser,
     onUserSaveSuccess: (res: Response) => void,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onUserSaveError: (res: Response, err: any) => void,
     req: Request,
     res: Response
@@ -36,7 +34,6 @@ export function registerHandler(
         .then(() => {
             onUserSaveSuccess(res)
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((err: any) => {
             onUserSaveError(res, err)
         })

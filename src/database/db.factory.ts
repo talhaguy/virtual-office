@@ -5,7 +5,6 @@ export function connectFactory(
     connect: Connect,
     mongoose: Mongoose,
     dbPath: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectionErrorCb: (err: any) => void,
     connectionOpenCb: () => void
 ) {
@@ -18,7 +17,6 @@ export function connectionErrorCbFactory(
     connectionErrorCb: ConnectionErrorCb,
     console: Console
 ) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (err: any) => {
         return connectionErrorCb(console, err)
     }
