@@ -1,15 +1,11 @@
 import { Response, Request } from "express"
-import ejs from "ejs"
-import { PROJECT_ROOT_PATH } from "../constants"
+import { InitialClientData } from "../models/InitialClientData"
 
-export function indexPageHandler(
-    pathToIndex: string,
-    req: Request,
-    res: Response
-) {
-    ejs.renderFile(`${PROJECT_ROOT_PATH}/src/templates/index.ejs`, {
-        test: "TEST STRING",
-    }).then((html) => {
-        res.send(html)
-    })
+export function indexPageHandler(req: Request, res: Response) {
+    const data: InitialClientData = {}
+    const user = req.user as { username: string }
+    if (user && user.username) {
+        data.username = user.username
+    }
+    res.render("index", data)
 }

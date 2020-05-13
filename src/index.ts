@@ -14,6 +14,7 @@ import { ensureLoggedIn } from "connect-ensure-login"
 import flash from "connect-flash"
 import morgan from "morgan"
 
+import { PROJECT_ROOT_PATH } from "./constants"
 import { verifyFunction, serializeUser, deserializeUser } from "./authorization"
 import { connect } from "./database"
 import {
@@ -42,6 +43,8 @@ app.use(
     })
 )
 app.use(flash())
+app.set("views", `${PROJECT_ROOT_PATH}/src/views`)
+app.set("view engine", "ejs")
 
 // MARK: Setup Passport
 
