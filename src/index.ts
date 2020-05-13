@@ -31,7 +31,6 @@ connect()
 // MARK: Set up express
 
 const app = express()
-app.use(express.static("public"))
 app.use(morgan("combined"))
 app.use(urlencoded({ extended: true }))
 app.use(json())
@@ -71,6 +70,8 @@ app.post(
 )
 app.post("/logout", logoutHandler)
 app.post("/isLoggedIn", isLoggedInHandler)
+
+app.use(express.static("public"))
 
 // MARK: Start server
 
