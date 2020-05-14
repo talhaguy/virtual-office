@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { InitialClientData } from "../models/InitialClientData"
+import { InitialClientData } from "../../shared-src/models/InitialClientData"
 
 export function indexPageHandler(req: Request, res: Response) {
     const data: InitialClientData = {}

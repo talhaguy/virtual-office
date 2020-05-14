@@ -22,6 +22,7 @@ import {
     registerHandler,
     logoutHandler,
     isLoggedInHandler,
+    notFoundPageHandler,
 } from "./routes"
 import { registrationValidation } from "./middleware"
 
@@ -60,13 +61,13 @@ app.use(passport.session())
 app.get("/", indexPageHandler)
 app.get("/register", indexPageHandler)
 app.get("/login", indexPageHandler)
-app.get("/my-account", ensureLoggedIn(), indexPageHandler)
+app.get("/main", ensureLoggedIn({ redirectTo: "/login" }), indexPageHandler)
 
 app.post("/register", registrationValidation, registerHandler)
 app.post(
     "/login",
     passport.authenticate("local", {
-        successRedirect: "/my-account",
+        successRedirect: "/main",
         failureRedirect: "/login",
         failureFlash: true,
     })
@@ -75,6 +76,8 @@ app.post("/logout", logoutHandler)
 app.post("/isLoggedIn", isLoggedInHandler)
 
 app.use(express.static("public"))
+
+app.get("*", notFoundPageHandler, indexPageHandler)
 
 // MARK: Start server
 

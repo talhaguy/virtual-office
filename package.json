@@ -8,8 +8,9 @@
         "test:watch": "jest --watch",
         "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand",
         "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-        "build": "tsc",
-        "start": "node dist/index.js",
+        "clean:server": "rm -rf dist",
+        "build": "npm run clean:server; tsc && cp -r src/views dist/src",
+        "start": "node dist/src/index.js",
         "prettier:check": "prettier --check 'src/**/*'",
         "prettier:fix": "prettier --write 'src/**/*'",
         "lint": "eslint './src/**/*.{ts,tsx}'",
@@ -43,6 +44,7 @@
         "@types/node": "^13.13.4",
         "@types/passport": "^1.0.3",
         "@types/passport-local": "^1.0.33",
+        "@types/react-router-dom": "^5.1.5",
         "@typescript-eslint/eslint-plugin": "^2.30.0",
         "@typescript-eslint/parser": "^2.30.0",
         "bufferutil": "^4.0.1",
@@ -77,6 +79,7 @@
         "passport": "^0.4.1",
         "passport-local": "^1.0.0",
         "react": "^16.13.1",
-        "react-dom": "^16.13.1"
+        "react-dom": "^16.13.1",
+        "react-router-dom": "^5.2.0"
     }
 }
