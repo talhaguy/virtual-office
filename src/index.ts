@@ -26,6 +26,11 @@ import {
     notFoundPageHandler,
 } from "./routes"
 import { registrationValidation } from "./middleware"
+import {
+    deserializeUser as deserializeUserForSocket,
+    addOnlineUser,
+    getOnlineUsers,
+} from "./socket"
 
 // MARK: Database start
 
@@ -37,13 +42,12 @@ const app = express()
 app.use(morgan("combined"))
 app.use(urlencoded({ extended: true }))
 app.use(json())
-app.use(
-    expressSession({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-    })
-)
+const sessionMiddleware = expressSession({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+})
+app.use(sessionMiddleware)
 app.use(flash())
 app.set("views", `${PROJECT_ROOT_PATH}/src/views`)
 app.set("view engine", "ejs")
@@ -94,8 +98,26 @@ const server = app.listen(process.env.PORT, (err) => {
 
 const io = socketIO(server)
 
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {} as any, next)
+})
+
 io.on("connection", (socket) => {
     console.log("a user connected")
+    // TODO: handle case in which non session user tries to make socket connection
+    const userId = socket.request.session.passport.user
+
+    deserializeUserForSocket(userId)
+        .then((user) => {
+            addOnlineUser(userId, {
+                username: user.username,
+                roomId: "lobby",
+            })
+            console.log(getOnlineUsers())
+        })
+        .catch((error) => {
+            console.error(error)
+        })
 
     socket.on("disconnect", () => {
         console.log("user disconnected")
