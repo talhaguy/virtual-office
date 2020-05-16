@@ -1,5 +1,6 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useState, useEffect } from "react"
 import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom"
+import io from "socket.io-client"
 
 import { LoginPage } from "./LoginPage"
 import { RegisterPage } from "./RegisterPage"
@@ -10,6 +11,12 @@ import { NotFoundPage } from "./NotFoundPage"
 export function App() {
     const { username } = useContext(DependenciesContext)
     const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            const socket = io()
+        }
+    }, [isLoggedIn])
 
     return (
         <BrowserRouter>

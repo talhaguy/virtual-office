@@ -13,6 +13,7 @@ import { urlencoded, json } from "body-parser"
 import { ensureLoggedIn } from "connect-ensure-login"
 import flash from "connect-flash"
 import morgan from "morgan"
+import socketIO from "socket.io"
 
 import { PROJECT_ROOT_PATH } from "./constants"
 import { verifyFunction, serializeUser, deserializeUser } from "./authorization"
@@ -81,10 +82,22 @@ app.get("*", notFoundPageHandler, indexPageHandler)
 
 // MARK: Start server
 
-app.listen(process.env.PORT, (err) => {
+const server = app.listen(process.env.PORT, (err) => {
     if (err) {
         return console.error(err)
     }
 
     return console.log(`Server is listening on ${process.env.PORT}`)
+})
+
+// MARK: Set up Socket.IO
+
+const io = socketIO(server)
+
+io.on("connection", (socket) => {
+    console.log("a user connected")
+
+    socket.on("disconnect", () => {
+        console.log("user disconnected")
+    })
 })
