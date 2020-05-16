@@ -13,6 +13,7 @@ import {
     IOEventResponseData,
     ClientData,
     RoomClientData,
+    RepsonseStatusText,
 } from "../shared-src/models"
 import { IOEvents } from "../shared-src/constants"
 
@@ -31,8 +32,10 @@ export function App() {
             })
                 .then<ServerResponse<ClientData>>((response) => response.json())
                 .then((response) => {
-                    setOnlineUsers(response.data.onlineUsers)
-                    setRooms(response.data.rooms)
+                    if (response.status === RepsonseStatusText.Success) {
+                        setOnlineUsers(response.data?.onlineUsers)
+                        setRooms(response.data?.rooms)
+                    }
                 })
                 .catch((err) => {})
 
