@@ -35,7 +35,7 @@ export function App() {
                 .catch((err) => {})
 
             socket.on(
-                IOEvents.UserLoggedOnline,
+                IOEvents.OnlineUsersChange,
                 (ioEventResponseData: IOEventResponseData<OnlineUser[]>) => {
                     setOnlineUsers(ioEventResponseData.data)
                 }

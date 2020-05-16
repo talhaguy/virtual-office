@@ -32,6 +32,7 @@ import {
     addOnlineUser,
     getOnlineUsers,
     getOnlineUsersList,
+    removeOnlineUser,
 } from "./socket"
 import { IOEvents } from "../shared-src/constants"
 import { IOEventResponseData, OnlineUser } from "../shared-src/models"
@@ -124,7 +125,7 @@ io.on("connection", (socket) => {
             const data: IOEventResponseData<OnlineUser[]> = {
                 data: getOnlineUsersList(),
             }
-            io.emit(IOEvents.UserLoggedOnline, data)
+            io.emit(IOEvents.OnlineUsersChange, data)
         })
         .catch((error) => {
             console.error(error)
@@ -132,5 +133,12 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         console.log("user disconnected")
+
+        removeOnlineUser(userId)
+
+        const data: IOEventResponseData<OnlineUser[]> = {
+            data: getOnlineUsersList(),
+        }
+        io.emit(IOEvents.OnlineUsersChange, data)
     })
 })

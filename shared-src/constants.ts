@@ -1,3 +1,3 @@
 export enum IOEvents {
-    UserLoggedOnline = "user:loggedOnline",
+    OnlineUsersChange = "user:onlineUsersChange",
 }
