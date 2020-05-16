@@ -24,13 +24,17 @@ import {
     logoutHandler,
     isLoggedInHandler,
     notFoundPageHandler,
+    clientDataHandler,
 } from "./routes"
 import { registrationValidation } from "./middleware"
 import {
     deserializeUser as deserializeUserForSocket,
     addOnlineUser,
     getOnlineUsers,
+    getOnlineUsersList,
 } from "./socket"
+import { IOEvents } from "../shared-src/constants"
+import { IOEventResponseData, OnlineUser } from "../shared-src/models"
 
 // MARK: Database start
 
@@ -79,6 +83,7 @@ app.post(
 )
 app.post("/logout", logoutHandler)
 app.post("/isLoggedIn", isLoggedInHandler)
+app.post("/data/getOnlineUsers", clientDataHandler)
 
 app.use(express.static("public"))
 
@@ -104,7 +109,9 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
     console.log("a user connected")
-    // TODO: handle case in which non session user tries to make socket connection
+    if (!socket.request.session.passport) {
+        return
+    }
     const userId = socket.request.session.passport.user
 
     deserializeUserForSocket(userId)
@@ -113,7 +120,11 @@ io.on("connection", (socket) => {
                 username: user.username,
                 roomId: "lobby",
             })
-            console.log(getOnlineUsers())
+
+            const data: IOEventResponseData<OnlineUser[]> = {
+                data: getOnlineUsersList(),
+            }
+            io.emit(IOEvents.UserLoggedOnline, data)
         })
         .catch((error) => {
             console.error(error)

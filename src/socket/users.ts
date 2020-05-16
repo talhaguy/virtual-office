@@ -20,6 +20,10 @@ export function getOnlineUsers() {
     return onlineUsers
 }
 
+export function getOnlineUsersList() {
+    return Object.values(onlineUsers)
+}
+
 export function deserializeUser(id: string) {
     return new Promise<User & Document>((res, rej) => {
         UserModel.findById(id)

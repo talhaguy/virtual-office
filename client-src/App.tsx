@@ -7,14 +7,39 @@ import { RegisterPage } from "./RegisterPage"
 import { DependenciesContext } from "./DependenciesContext"
 import { MainPage } from "./MainPage"
 import { NotFoundPage } from "./NotFoundPage"
+import {
+    OnlineUser,
+    ServerResponse,
+    IOEventResponseData,
+} from "../shared-src/models"
+import { IOEvents } from "../shared-src/constants"
 
 export function App() {
     const { username } = useContext(DependenciesContext)
     const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)
+    const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
 
     useEffect(() => {
         if (isLoggedIn) {
             const socket = io()
+
+            fetch("/data/getOnlineUsers", {
+                method: "post",
+            })
+                .then<ServerResponse<OnlineUser[]>>((response) =>
+                    response.json()
+                )
+                .then((response) => {
+                    setOnlineUsers(response.data)
+                })
+                .catch((err) => {})
+
+            socket.on(
+                IOEvents.UserLoggedOnline,
+                (ioEventResponseData: IOEventResponseData<OnlineUser[]>) => {
+                    setOnlineUsers(ioEventResponseData.data)
+                }
+            )
         }
     }, [isLoggedIn])
 
@@ -66,7 +91,7 @@ export function App() {
                             }}
                         />
                     ) : (
-                        <MainPage />
+                        <MainPage onlineUsers={onlineUsers} />
                     )}
                 </Route>
                 <Route path="*">

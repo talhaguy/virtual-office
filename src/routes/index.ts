@@ -22,3 +22,5 @@ export const registerHandler = ((
 export { logoutHandler, isLoggedInHandler } from "./loginRouteHandlers"
 
 export { notFoundPageHandler } from "./notFoundPageHandler"
+
+export { clientDataHandler } from "./clientDataRouteHandler"
