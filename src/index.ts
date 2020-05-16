@@ -84,7 +84,7 @@ app.post(
 )
 app.post("/logout", logoutHandler)
 app.post("/isLoggedIn", isLoggedInHandler)
-app.post("/data/getOnlineUsers", clientDataHandler)
+app.post("/data/getClientData", clientDataHandler)
 
 app.use(express.static("public"))
 

@@ -11,6 +11,8 @@ import {
     OnlineUser,
     ServerResponse,
     IOEventResponseData,
+    ClientData,
+    RoomClientData,
 } from "../shared-src/models"
 import { IOEvents } from "../shared-src/constants"
 
@@ -18,19 +20,19 @@ export function App() {
     const { username } = useContext(DependenciesContext)
     const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
+    const [rooms, setRooms] = useState<RoomClientData[]>([])
 
     useEffect(() => {
         if (isLoggedIn) {
             const socket = io()
 
-            fetch("/data/getOnlineUsers", {
+            fetch("/data/getClientData", {
                 method: "post",
             })
-                .then<ServerResponse<OnlineUser[]>>((response) =>
-                    response.json()
-                )
+                .then<ServerResponse<ClientData>>((response) => response.json())
                 .then((response) => {
-                    setOnlineUsers(response.data)
+                    setOnlineUsers(response.data.onlineUsers)
+                    setRooms(response.data.rooms)
                 })
                 .catch((err) => {})
 
@@ -91,7 +93,7 @@ export function App() {
                             }}
                         />
                     ) : (
-                        <MainPage onlineUsers={onlineUsers} />
+                        <MainPage onlineUsers={onlineUsers} rooms={rooms} />
                     )}
                 </Route>
                 <Route path="*">

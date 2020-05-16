@@ -3,8 +3,10 @@ import { getOnlineUsersList } from "../socket"
 import {
     ServerResponse,
     RepsonseStatusText,
-    OnlineUser,
+    ClientData,
+    RoomClientData,
 } from "../../shared-src/models"
+import { RoomModel } from "../databaseModels"
 
 export function clientDataHandler(req: Request, res: Response) {
     if (!req.isAuthenticated()) {
@@ -16,10 +18,30 @@ export function clientDataHandler(req: Request, res: Response) {
         return
     }
 
-    const onlineUsersList = getOnlineUsersList()
-    const responseData: ServerResponse<OnlineUser[]> = {
-        status: RepsonseStatusText.Success,
-        data: onlineUsersList,
-    }
-    res.json(responseData)
+    RoomModel.find()
+        .then((rooms) => {
+            const onlineUsers = getOnlineUsersList()
+            const roomData: RoomClientData[] = rooms.map((room) => {
+                return {
+                    id: room.name,
+                    name: room.id,
+                }
+            })
+            const responseData: ServerResponse<ClientData> = {
+                status: RepsonseStatusText.Success,
+                data: {
+                    onlineUsers,
+                    rooms: roomData,
+                },
+            }
+            res.json(responseData)
+        })
+        .catch((err) => {
+            console.error(err)
+            const responseData: ServerResponse<{}> = {
+                status: RepsonseStatusText.Error,
+                data: {},
+            }
+            res.status(500).json(responseData)
+        })
 }
