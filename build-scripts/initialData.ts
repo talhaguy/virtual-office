@@ -49,11 +49,16 @@ export async function initialData() {
         name: "Lobby",
     })
 
+    const meetingRoom = new RoomModel({
+        id: "meetingRoom",
+        name: "Meeting Room",
+    })
+
     try {
-        await lobby.save()
-        console.log("done saving lobby room")
+        await RoomModel.create(lobby, meetingRoom)
+        console.log("done saving rooms")
     } catch (err) {
-        console.error("There was an error saving lobby room")
+        console.error("There was an error saving rooms")
     }
 
     mongoose.disconnect()

@@ -11,16 +11,34 @@ SESSION_SECRET=keyboard cat
 DB_PATH=mongodb://localhost/virtualOfficeDev
 ```
 
-## Reinit database
+## Build server
 
-Build project
+```
+npm run server:build
+```
+
+## Build client
+
+```
+npm run client:build
+```
+
+## Build both server and client
 
 ```
 npm run build
 ```
 
+## Reinit database
+
+Build the server
+
+```
+npm run server:build
+```
+
 Run DB script
 
 ```
-node dist/build-scripts/index.js
+npm run db:reinit
 ```
