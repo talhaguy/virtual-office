@@ -1,8 +1,7 @@
 import { OnlineUser } from "./OnlineUser"
+import { Room } from "../../src/models"
 
-export interface RoomClientData {
-    id: string
-    name: string
+export interface RoomClientData extends Room {
     users: string[]
 }
 

@@ -1,6 +1,7 @@
 import { database } from "../src/database"
 import { RoomModel, UserModel } from "../src/databaseModels"
 import mongoose from "mongoose"
+import { RoomType } from "../shared-src/constants"
 
 export async function initialData() {
     try {
@@ -10,14 +11,16 @@ export async function initialData() {
         })
         console.log("db connected to")
     } catch (err) {
-        console.error("there was an error connecting to db")
+        console.log("there was an error connecting to db")
+        console.error(err)
     }
 
     try {
         await database.connection.db.dropDatabase()
         console.log("dropped database")
     } catch (err) {
-        console.error("there was an error dropping the database")
+        console.log("there was an error dropping the database")
+        console.error(err)
     }
 
     const userOne = new UserModel({
@@ -29,7 +32,8 @@ export async function initialData() {
         await userOne.save()
         console.log("done saving userOne")
     } catch (err) {
-        console.error("There was an error saving userOne")
+        console.log("There was an error saving userOne")
+        console.error(err)
     }
 
     const userTwo = new UserModel({
@@ -41,24 +45,37 @@ export async function initialData() {
         await userTwo.save()
         console.log("done saving userTwo")
     } catch (err) {
-        console.error("There was an error saving userTwo")
+        console.log("There was an error saving userTwo")
+        console.error(err)
     }
 
-    const lobby = new RoomModel({
-        id: "lobby",
-        name: "Lobby",
+    const desksRoom = new RoomModel({
+        id: "desksRoom",
+        name: "Desks Room",
+        width: 3,
+        roomType: RoomType.Desks,
     })
 
     const meetingRoom = new RoomModel({
         id: "meetingRoom",
         name: "Meeting Room",
+        width: 2,
+        roomType: RoomType.MeetingRoom,
+    })
+
+    const breakRoom = new RoomModel({
+        id: "breakRoom",
+        name: "Break Room",
+        width: 1,
+        roomType: RoomType.Break,
     })
 
     try {
-        await RoomModel.create(lobby, meetingRoom)
+        await RoomModel.create(desksRoom, meetingRoom, breakRoom)
         console.log("done saving rooms")
     } catch (err) {
-        console.error("There was an error saving rooms")
+        console.log("There was an error saving rooms:")
+        console.error(err)
     }
 
     mongoose.disconnect()

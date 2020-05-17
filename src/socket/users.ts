@@ -52,6 +52,8 @@ export function constructClientData() {
                         users: userRoomsMap[room.id]
                             ? userRoomsMap[room.id]
                             : [],
+                        width: room.width,
+                        roomType: room.roomType,
                     }
                 })
 

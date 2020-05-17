@@ -1,7 +1,8 @@
-import { User } from "./User"
+import { RoomType } from "../../shared-src/constants"
 
 export interface Room {
     id: string
     name: string
-    users?: User[]
+    width: number
+    roomType: RoomType
 }

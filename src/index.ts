@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
         .then((user) => {
             addOnlineUser(userId, {
                 username: user.username,
-                roomId: "lobby",
+                roomId: "deskRoom",
             })
             return constructClientData()
         })
