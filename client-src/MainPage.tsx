@@ -49,6 +49,22 @@ export function MainPage({ isLoggedIn }: MainPageProps) {
         }
     }, [isLoggedIn])
 
+    const getRoomSizeClassName = (width: number) => {
+        switch (width) {
+            case 1:
+                return styles.roomsWidthSmall
+
+            case 2:
+                return styles.roomsWidthMedium
+
+            case 3:
+                return styles.roomsWidthLarge
+
+            default:
+                return ""
+        }
+    }
+
     return (
         <div>
             <h2>Main Page</h2>
@@ -64,7 +80,10 @@ export function MainPage({ isLoggedIn }: MainPageProps) {
                 <h3>Rooms</h3>
                 <div className={styles.rooms}>
                     {rooms.map((room, i) => (
-                        <div key={i}>
+                        <div
+                            key={i}
+                            className={getRoomSizeClassName(room.width)}
+                        >
                             <Room room={room} />
                         </div>
                     ))}
