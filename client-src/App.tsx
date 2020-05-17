@@ -17,6 +17,8 @@ import {
 } from "../shared-src/models"
 import { IOEvents } from "../shared-src/constants"
 
+import "./index.css"
+
 export function App() {
     const { username } = useContext(DependenciesContext)
     const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)

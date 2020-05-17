@@ -1,6 +1,9 @@
 import React from "react"
+
 import { LogoutForm } from "./LogoutForm"
 import { OnlineUser, RoomClientData } from "../shared-src/models"
+import { Room } from "./Room"
+import styles from "./MainPage.module.css"
 
 interface MainPageProps {
     onlineUsers: OnlineUser[]
@@ -20,12 +23,14 @@ export function MainPage({ onlineUsers, rooms }: MainPageProps) {
                 </ul>
             </div>
             <div>
-                Rooms:
-                <ul>
+                <h3>Rooms</h3>
+                <div className={styles.rooms}>
                     {rooms.map((room, i) => (
-                        <li key={i}>{room.name}</li>
+                        <div key={i}>
+                            <Room room={room} />
+                        </div>
                     ))}
-                </ul>
+                </div>
             </div>
             <br />
             <LogoutForm />

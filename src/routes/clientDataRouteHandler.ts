@@ -23,8 +23,8 @@ export function clientDataHandler(req: Request, res: Response) {
             const onlineUsers = getOnlineUsersList()
             const roomData: RoomClientData[] = rooms.map((room) => {
                 return {
-                    id: room.name,
-                    name: room.id,
+                    id: room.id,
+                    name: room.name,
                 }
             })
             const responseData: ServerResponse<ClientData> = {
