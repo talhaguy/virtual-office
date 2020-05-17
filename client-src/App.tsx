@@ -1,55 +1,17 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext, useState } from "react"
 import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom"
-import io from "socket.io-client"
 
 import { LoginPage } from "./LoginPage"
 import { RegisterPage } from "./RegisterPage"
 import { DependenciesContext } from "./DependenciesContext"
 import { MainPage } from "./MainPage"
 import { NotFoundPage } from "./NotFoundPage"
-import {
-    OnlineUser,
-    ServerResponse,
-    IOEventResponseData,
-    ClientData,
-    RoomClientData,
-    RepsonseStatusText,
-} from "../shared-src/models"
-import { IOEvents } from "../shared-src/constants"
 
 import "./index.css"
 
 export function App() {
     const { username } = useContext(DependenciesContext)
     const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)
-    const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
-    const [rooms, setRooms] = useState<RoomClientData[]>([])
-
-    useEffect(() => {
-        if (isLoggedIn) {
-            const socket = io()
-
-            fetch("/data/getClientData", {
-                method: "post",
-            })
-                .then<ServerResponse<ClientData>>((response) => response.json())
-                .then((response) => {
-                    if (response.status === RepsonseStatusText.Success) {
-                        setOnlineUsers(response.data?.onlineUsers)
-                        setRooms(response.data?.rooms)
-                    }
-                })
-                .catch((err) => {})
-
-            socket.on(
-                IOEvents.OnlineUsersChange,
-                (ioEventResponseData: IOEventResponseData<ClientData>) => {
-                    setOnlineUsers(ioEventResponseData.data.onlineUsers)
-                    setRooms(ioEventResponseData.data.rooms)
-                }
-            )
-        }
-    }, [isLoggedIn])
 
     return (
         <BrowserRouter>
@@ -99,7 +61,7 @@ export function App() {
                             }}
                         />
                     ) : (
-                        <MainPage onlineUsers={onlineUsers} rooms={rooms} />
+                        <MainPage isLoggedIn={isLoggedIn} />
                     )}
                 </Route>
                 <Route path="*">
