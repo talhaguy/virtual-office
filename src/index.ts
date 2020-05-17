@@ -30,12 +30,11 @@ import { registrationValidation } from "./middleware"
 import {
     deserializeUser as deserializeUserForSocket,
     addOnlineUser,
-    getOnlineUsers,
-    getOnlineUsersList,
     removeOnlineUser,
+    constructClientData,
 } from "./socket"
 import { IOEvents } from "../shared-src/constants"
-import { IOEventResponseData, OnlineUser } from "../shared-src/models"
+import { IOEventResponseData, ClientData } from "../shared-src/models"
 
 // MARK: Database start
 
@@ -121,9 +120,11 @@ io.on("connection", (socket) => {
                 username: user.username,
                 roomId: "lobby",
             })
-
-            const data: IOEventResponseData<OnlineUser[]> = {
-                data: getOnlineUsersList(),
+            return constructClientData()
+        })
+        .then((clientData) => {
+            const data: IOEventResponseData<ClientData> = {
+                data: clientData,
             }
             io.emit(IOEvents.OnlineUsersChange, data)
         })
@@ -136,9 +137,15 @@ io.on("connection", (socket) => {
 
         removeOnlineUser(userId)
 
-        const data: IOEventResponseData<OnlineUser[]> = {
-            data: getOnlineUsersList(),
-        }
-        io.emit(IOEvents.OnlineUsersChange, data)
+        constructClientData()
+            .then((clientData) => {
+                const data: IOEventResponseData<ClientData> = {
+                    data: clientData,
+                }
+                io.emit(IOEvents.OnlineUsersChange, data)
+            })
+            .catch((error) => {
+                console.error(error)
+            })
     })
 })

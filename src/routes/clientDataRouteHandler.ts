@@ -1,12 +1,10 @@
 import { Request, Response } from "express"
-import { getOnlineUsersList } from "../socket"
+import { constructClientData } from "../socket"
 import {
     ServerResponse,
     RepsonseStatusText,
     ClientData,
-    RoomClientData,
 } from "../../shared-src/models"
-import { RoomModel } from "../databaseModels"
 
 export function clientDataHandler(req: Request, res: Response) {
     if (!req.isAuthenticated()) {
@@ -18,21 +16,11 @@ export function clientDataHandler(req: Request, res: Response) {
         return
     }
 
-    RoomModel.find()
-        .then((rooms) => {
-            const onlineUsers = getOnlineUsersList()
-            const roomData: RoomClientData[] = rooms.map((room) => {
-                return {
-                    id: room.id,
-                    name: room.name,
-                }
-            })
+    constructClientData()
+        .then((clientData) => {
             const responseData: ServerResponse<ClientData> = {
                 status: RepsonseStatusText.Success,
-                data: {
-                    onlineUsers,
-                    rooms: roomData,
-                },
+                data: clientData,
             }
             res.json(responseData)
         })

@@ -11,6 +11,11 @@ export function Room({ room }: RoomProps) {
     return (
         <div className={styles.container}>
             {room.id} / {room.name}
+            <ul>
+                {room.users.map((user, i) => (
+                    <li key={i}>{user}</li>
+                ))}
+            </ul>
         </div>
     )
 }

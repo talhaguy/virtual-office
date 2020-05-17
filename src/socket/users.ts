@@ -1,7 +1,7 @@
 import { Document } from "mongoose"
 import { OnlineUserData, User } from "../models"
-import { OnlineUser } from "../../shared-src/models"
-import { UserModel } from "../databaseModels"
+import { OnlineUser, RoomClientData, ClientData } from "../../shared-src/models"
+import { UserModel, RoomModel } from "../databaseModels"
 
 const onlineUsers: OnlineUserData = {}
 
@@ -22,6 +22,48 @@ export function getOnlineUsers() {
 
 export function getOnlineUsersList() {
     return Object.values(onlineUsers)
+}
+
+function getUserRoomsMap() {
+    return Object.values(onlineUsers).reduce<{ [key: string]: string[] }>(
+        (accum, user) => {
+            const room = accum[user.roomId]
+            if (room) {
+                room.push(user.username)
+            } else {
+                accum[user.roomId] = [user.username]
+            }
+            return accum
+        },
+        {}
+    )
+}
+
+export function constructClientData() {
+    return new Promise<ClientData>((res, rej) => {
+        RoomModel.find()
+            .then((rooms) => {
+                const onlineUsers = getOnlineUsersList()
+                const userRoomsMap = getUserRoomsMap()
+                const roomData: RoomClientData[] = rooms.map((room) => {
+                    return {
+                        id: room.id,
+                        name: room.name,
+                        users: userRoomsMap[room.id]
+                            ? userRoomsMap[room.id]
+                            : [],
+                    }
+                })
+
+                res({
+                    onlineUsers,
+                    rooms: roomData,
+                })
+            })
+            .catch((err) => {
+                rej(err)
+            })
+    })
 }
 
 export function deserializeUser(id: string) {

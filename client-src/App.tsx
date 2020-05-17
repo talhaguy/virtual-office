@@ -43,8 +43,9 @@ export function App() {
 
             socket.on(
                 IOEvents.OnlineUsersChange,
-                (ioEventResponseData: IOEventResponseData<OnlineUser[]>) => {
-                    setOnlineUsers(ioEventResponseData.data)
+                (ioEventResponseData: IOEventResponseData<ClientData>) => {
+                    setOnlineUsers(ioEventResponseData.data.onlineUsers)
+                    setRooms(ioEventResponseData.data.rooms)
                 }
             )
         }
