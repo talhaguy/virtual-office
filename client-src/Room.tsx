@@ -5,9 +5,10 @@ import styles from "./Room.module.css"
 
 interface RoomProps {
     room: RoomClientData
+    onJoinButtonClick: (roomId: string) => void
 }
 
-export function Room({ room }: RoomProps) {
+export function Room({ room, onJoinButtonClick }: RoomProps) {
     return (
         <div className={styles.container}>
             {room.id} / {room.name}
@@ -16,6 +17,7 @@ export function Room({ room }: RoomProps) {
                     <li key={i}>{user}</li>
                 ))}
             </ul>
+            <button onClick={() => onJoinButtonClick(room.id)}>Join</button>
         </div>
     )
 }

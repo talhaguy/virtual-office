@@ -30,6 +30,7 @@ import { registrationValidation } from "./middleware"
 import {
     deserializeUser as deserializeUserForSocket,
     addOnlineUser,
+    updateUserRoom,
     removeOnlineUser,
     constructClientData,
 } from "./socket"
@@ -118,8 +119,9 @@ io.on("connection", (socket) => {
         .then((user) => {
             addOnlineUser(userId, {
                 username: user.username,
-                roomId: "deskRoom",
+                roomId: "desksRoom",
             })
+            socket.join("desksRoom")
             return constructClientData()
         })
         .then((clientData) => {
@@ -148,4 +150,27 @@ io.on("connection", (socket) => {
                 console.error(error)
             })
     })
+
+    socket.on(
+        IOEvents.UserJoinedRoom,
+        (ioEventResponseData: IOEventResponseData<string>) => {
+            console.log("join", ioEventResponseData.data)
+
+            socket.leaveAll()
+            socket.join(ioEventResponseData.data)
+
+            updateUserRoom(userId, ioEventResponseData.data)
+
+            constructClientData()
+                .then((clientData) => {
+                    const data: IOEventResponseData<ClientData> = {
+                        data: clientData,
+                    }
+                    io.emit(IOEvents.OnlineUsersChange, data)
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+        }
+    )
 })

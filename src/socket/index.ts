@@ -1,5 +1,6 @@
 export {
     addOnlineUser,
+    updateUserRoom,
     removeOnlineUser,
     getOnlineUsers,
     getOnlineUsersList,

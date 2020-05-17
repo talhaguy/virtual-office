@@ -12,6 +12,10 @@ export function addOnlineUser(key: string, onlineUserData: OnlineUser) {
     }
 }
 
+export function updateUserRoom(key: string, roomId: string) {
+    onlineUsers[key].roomId = roomId
+}
+
 export function removeOnlineUser(key: string) {
     delete onlineUsers[key]
 }

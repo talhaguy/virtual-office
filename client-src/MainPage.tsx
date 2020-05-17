@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import io from "socket.io-client"
 
 import { LogoutForm } from "./LogoutForm"
@@ -22,10 +22,11 @@ interface MainPageProps {
 export function MainPage({ isLoggedIn }: MainPageProps) {
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
     const [rooms, setRooms] = useState<RoomClientData[]>([])
+    const socketRef = useRef<SocketIOClient.Socket>(null)
 
     useEffect(() => {
         if (isLoggedIn) {
-            const socket = io()
+            socketRef.current = io()
 
             fetch("/data/getClientData", {
                 method: "post",
@@ -39,7 +40,7 @@ export function MainPage({ isLoggedIn }: MainPageProps) {
                 })
                 .catch((err) => {})
 
-            socket.on(
+            socketRef.current.on(
                 IOEvents.OnlineUsersChange,
                 (ioEventResponseData: IOEventResponseData<ClientData>) => {
                     setOnlineUsers(ioEventResponseData.data.onlineUsers)
@@ -65,6 +66,13 @@ export function MainPage({ isLoggedIn }: MainPageProps) {
         }
     }
 
+    const onRoomJoinButtonClick = (roomId: string) => {
+        const data: IOEventResponseData<string> = {
+            data: roomId,
+        }
+        socketRef.current.emit(IOEvents.UserJoinedRoom, data)
+    }
+
     return (
         <div>
             <h2>Main Page</h2>
@@ -84,7 +92,10 @@ export function MainPage({ isLoggedIn }: MainPageProps) {
                             key={i}
                             className={getRoomSizeClassName(room.width)}
                         >
-                            <Room room={room} />
+                            <Room
+                                room={room}
+                                onJoinButtonClick={onRoomJoinButtonClick}
+                            />
                         </div>
                     ))}
                 </div>
