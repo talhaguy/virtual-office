@@ -23,8 +23,10 @@ import {
     logoutHandler,
     isLoggedInHandler,
     notFoundPageHandler,
+    clientDataHandler,
 } from "./routes"
 import { registrationValidation } from "./middleware"
+import { initialize } from "./socket"
 
 // MARK: Database start
 
@@ -36,13 +38,12 @@ const app = express()
 app.use(morgan("combined"))
 app.use(urlencoded({ extended: true }))
 app.use(json())
-app.use(
-    expressSession({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-    })
-)
+const sessionMiddleware = expressSession({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+})
+app.use(sessionMiddleware)
 app.use(flash())
 app.set("views", `${PROJECT_ROOT_PATH}/src/views`)
 app.set("view engine", "ejs")
@@ -74,6 +75,7 @@ app.post(
 )
 app.post("/logout", logoutHandler)
 app.post("/isLoggedIn", isLoggedInHandler)
+app.post("/data/getClientData", clientDataHandler)
 
 app.use(express.static("public"))
 
@@ -81,10 +83,14 @@ app.get("*", notFoundPageHandler, indexPageHandler)
 
 // MARK: Start server
 
-app.listen(process.env.PORT, (err) => {
+const server = app.listen(process.env.PORT, (err) => {
     if (err) {
         return console.error(err)
     }
 
     return console.log(`Server is listening on ${process.env.PORT}`)
 })
+
+// MARK: Set up Socket.IO
+
+initialize(server, sessionMiddleware)

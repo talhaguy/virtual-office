@@ -9,3 +9,5 @@ export interface CreateUser {
 export const createUser: CreateUser = (doc: any) => new _UserModel(doc)
 
 export const UserModel = _UserModel
+
+export { RoomModel } from "./RoomModel"

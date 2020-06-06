@@ -7,6 +7,8 @@ import { DependenciesContext } from "./DependenciesContext"
 import { MainPage } from "./MainPage"
 import { NotFoundPage } from "./NotFoundPage"
 
+import "./index.css"
+
 export function App() {
     const { username } = useContext(DependenciesContext)
     const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)
@@ -59,7 +61,7 @@ export function App() {
                             }}
                         />
                     ) : (
-                        <MainPage />
+                        <MainPage username={username} isLoggedIn={isLoggedIn} />
                     )}
                 </Route>
                 <Route path="*">
