@@ -61,7 +61,7 @@ export function App() {
                             }}
                         />
                     ) : (
-                        <MainPage isLoggedIn={isLoggedIn} />
+                        <MainPage username={username} isLoggedIn={isLoggedIn} />
                     )}
                 </Route>
                 <Route path="*">

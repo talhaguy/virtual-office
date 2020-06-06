@@ -12,6 +12,10 @@ export function addOnlineUser(key: string, onlineUserData: OnlineUser) {
     }
 }
 
+export function getDataForUser(userId: string) {
+    return onlineUsers[userId]
+}
+
 export function updateUserRoom(key: string, roomId: string) {
     onlineUsers[key].roomId = roomId
 }
@@ -43,7 +47,7 @@ function getUserRoomsMap() {
     )
 }
 
-export function constructClientData() {
+export function constructClientData(userId: string) {
     return new Promise<ClientData>((res, rej) => {
         RoomModel.find()
             .then((rooms) => {
@@ -60,8 +64,10 @@ export function constructClientData() {
                         roomType: room.roomType,
                     }
                 })
+                const currentUser = getDataForUser(userId)
 
                 res({
+                    currentUser,
                     onlineUsers,
                     rooms: roomData,
                 })

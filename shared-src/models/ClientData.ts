@@ -6,6 +6,7 @@ export interface RoomClientData extends Room {
 }
 
 export interface ClientData {
+    currentUser: OnlineUser
     onlineUsers: OnlineUser[]
     rooms: RoomClientData[]
 }

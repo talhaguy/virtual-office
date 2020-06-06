@@ -13,7 +13,6 @@ import { urlencoded, json } from "body-parser"
 import { ensureLoggedIn } from "connect-ensure-login"
 import flash from "connect-flash"
 import morgan from "morgan"
-import socketIO from "socket.io"
 
 import { PROJECT_ROOT_PATH } from "./constants"
 import { verifyFunction, serializeUser, deserializeUser } from "./authorization"
@@ -27,15 +26,7 @@ import {
     clientDataHandler,
 } from "./routes"
 import { registrationValidation } from "./middleware"
-import {
-    deserializeUser as deserializeUserForSocket,
-    addOnlineUser,
-    updateUserRoom,
-    removeOnlineUser,
-    constructClientData,
-} from "./socket"
-import { IOEvents } from "../shared-src/constants"
-import { IOEventResponseData, ClientData } from "../shared-src/models"
+import { initialize } from "./socket"
 
 // MARK: Database start
 
@@ -102,75 +93,4 @@ const server = app.listen(process.env.PORT, (err) => {
 
 // MARK: Set up Socket.IO
 
-const io = socketIO(server)
-
-io.use((socket, next) => {
-    sessionMiddleware(socket.request, {} as any, next)
-})
-
-io.on("connection", (socket) => {
-    console.log("a user connected")
-    if (!socket.request.session.passport) {
-        return
-    }
-    const userId = socket.request.session.passport.user
-
-    deserializeUserForSocket(userId)
-        .then((user) => {
-            addOnlineUser(userId, {
-                username: user.username,
-                roomId: "desksRoom",
-            })
-            socket.join("desksRoom")
-            return constructClientData()
-        })
-        .then((clientData) => {
-            const data: IOEventResponseData<ClientData> = {
-                data: clientData,
-            }
-            io.emit(IOEvents.OnlineUsersChange, data)
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-
-    socket.on("disconnect", () => {
-        console.log("user disconnected")
-
-        removeOnlineUser(userId)
-
-        constructClientData()
-            .then((clientData) => {
-                const data: IOEventResponseData<ClientData> = {
-                    data: clientData,
-                }
-                io.emit(IOEvents.OnlineUsersChange, data)
-            })
-            .catch((error) => {
-                console.error(error)
-            })
-    })
-
-    socket.on(
-        IOEvents.UserJoinedRoom,
-        (ioEventResponseData: IOEventResponseData<string>) => {
-            console.log("join", ioEventResponseData.data)
-
-            socket.leaveAll()
-            socket.join(ioEventResponseData.data)
-
-            updateUserRoom(userId, ioEventResponseData.data)
-
-            constructClientData()
-                .then((clientData) => {
-                    const data: IOEventResponseData<ClientData> = {
-                        data: clientData,
-                    }
-                    io.emit(IOEvents.OnlineUsersChange, data)
-                })
-                .catch((error) => {
-                    console.error(error)
-                })
-        }
-    )
-})
+initialize(server, sessionMiddleware)

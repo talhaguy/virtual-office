@@ -16,7 +16,7 @@ export function clientDataHandler(req: Request, res: Response) {
         return
     }
 
-    constructClientData()
+    constructClientData((req.user as { _id: string })._id)
         .then((clientData) => {
             const responseData: ServerResponse<ClientData> = {
                 status: RepsonseStatusText.Success,
