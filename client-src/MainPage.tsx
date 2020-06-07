@@ -152,7 +152,9 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                     <Button
                                         type={ButtonType.Normal}
                                         label={"Join"}
-                                        onClickHandler={() => {}}
+                                        onClickHandler={() =>
+                                            onRoomJoinButtonClick(room.id)
+                                        }
                                     />
                                 }
                                 titlePosition={
@@ -162,10 +164,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                 }
                                 type={PanelType.NoShadowNoBorderRadius}
                             >
-                                <Room
-                                    room={room}
-                                    onJoinButtonClick={onRoomJoinButtonClick}
-                                />
+                                <Room room={room} />
                             </Panel>
                         </div>
                     ))}

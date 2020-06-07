@@ -1,4 +1,6 @@
 .rooms {
+    width: var(--breakpoint-lg);
+    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }

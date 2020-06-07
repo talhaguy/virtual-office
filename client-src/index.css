@@ -8,6 +8,8 @@
 
     --font-primary: "Roboto", sans-serif;
 
+    --breakpoint-lg: 1200px;
+
     font-family: var(--font-primary);
     font-size: 14px;
 }
