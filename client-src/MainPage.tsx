@@ -157,13 +157,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                 <h3>Rooms</h3>
                 <div className={styles.rooms}>
                     {rooms.map((room, i) => {
-                        console.log("for room", room.id)
-                        console.log({
-                            gridColumnStart: room.gridColStart,
-                            gridColumnEnd: room.gridColEnd,
-                            gridRowStart: room.gridRowStart,
-                            gridRowEnd: room.gridRowEnd,
-                        })
                         return (
                             <div
                                 key={i}
@@ -191,7 +184,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                             ? PanelTitlePosition.Top
                                             : PanelTitlePosition.Bottom
                                     }
-                                    type={PanelType.NoShadowNoBorderRadius}
+                                    type={PanelType.DropShadowAsBorder}
                                 >
                                     <Room room={room} />
                                 </Panel>

@@ -3,7 +3,7 @@ import styles from "./Panel.module.css"
 
 export enum PanelType {
     Normal,
-    NoShadowNoBorderRadius,
+    DropShadowAsBorder,
 }
 
 export enum PanelTitlePosition {
@@ -32,9 +32,9 @@ export const Panel: React.FC<PanelProps> = ({
         case PanelType.Normal:
             panelTypeClassName = styles.typeNormal
             break
-        case PanelType.NoShadowNoBorderRadius:
+        case PanelType.DropShadowAsBorder:
         default:
-            panelTypeClassName = styles.typeNoShadowNoBorderRadius
+            panelTypeClassName = styles.typeDropShadowAsBorder
             break
     }
 
