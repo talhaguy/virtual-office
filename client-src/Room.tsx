@@ -7,9 +7,10 @@ import styles from "./Room.module.css"
 
 interface RoomProps {
     room: RoomClientData
+    currentUserName: string
 }
 
-export function Room({ room }: RoomProps) {
+export function Room({ room, currentUserName }: RoomProps) {
     const doorSize = 70
     const borderSize = 2
 
@@ -55,7 +56,14 @@ export function Room({ room }: RoomProps) {
 
             <ul className={styles.userList}>
                 {room.users.map((user, i) => (
-                    <li key={i}>
+                    <li className={styles.userContainer} key={i}>
+                        {user.username === currentUserName ? (
+                            <span className={styles.currentUserIndicator}>
+                                &#9660;
+                            </span>
+                        ) : (
+                            ""
+                        )}
                         <RoomUser username={user.username} color={user.color} />
                     </li>
                 ))}

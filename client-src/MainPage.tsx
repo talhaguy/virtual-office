@@ -196,7 +196,10 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                     }
                                     type={PanelType.DropShadowAsBorder}
                                 >
-                                    <Room room={room} />
+                                    <Room
+                                        room={room}
+                                        currentUserName={currentUser.username}
+                                    />
                                 </Panel>
                             </div>
                         )

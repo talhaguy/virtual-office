@@ -23,3 +23,22 @@
     display: block;
     position: absolute;
 }
+
+.userContainer {
+    position: relative;
+}
+
+.userContainer + .userContainer {
+    margin-left: 10px;
+}
+
+.currentUserIndicator {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    color: var(--color-fieryRose);
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+}
