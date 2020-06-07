@@ -11,6 +11,7 @@ import {
     ClientData,
     IOEventResponseData,
     IOEventChatMessageData,
+    RoomTitlePosition,
 } from "../shared-src/models"
 import { Room } from "./Room"
 import { IOEvents } from "../shared-src/constants"
@@ -157,6 +158,14 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                 <h3>Rooms</h3>
                 <div className={styles.rooms}>
                     {rooms.map((room, i) => {
+                        console.log(
+                            room.titlePosition,
+                            "===",
+                            RoomTitlePosition.Top
+                        )
+                        console.log(
+                            room.titlePosition === RoomTitlePosition.Top
+                        )
                         return (
                             <div
                                 key={i}
@@ -180,7 +189,8 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                         />
                                     }
                                     titlePosition={
-                                        i < 2
+                                        room.titlePosition ===
+                                        RoomTitlePosition.Top
                                             ? PanelTitlePosition.Top
                                             : PanelTitlePosition.Bottom
                                     }

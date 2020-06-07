@@ -2,7 +2,7 @@ import { Document } from "mongoose"
 import { database } from "../database/db"
 import { Room } from "../models"
 import { RoomType } from "../../shared-src/constants"
-import { DoorSide } from "../../shared-src/models"
+import { DoorSide, RoomTitlePosition } from "../../shared-src/models"
 
 const DoorSchema = new database.Schema({
     side: {
@@ -46,6 +46,11 @@ export const RoomModel = database.model<Room & Document>(
         },
         doors: {
             type: [DoorSchema],
+            required: true,
+        },
+        titlePosition: {
+            type: String,
+            enum: [RoomTitlePosition.Top, RoomTitlePosition.Bottom],
             required: true,
         },
         roomType: {

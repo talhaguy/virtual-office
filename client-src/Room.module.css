@@ -1,5 +1,9 @@
 .container {
-    height: 100%;
+    height: calc(100% + 20px);
+    width: calc(100% + 20px);
+    position: relative;
+    left: -10px;
+    top: -10px;
 }
 
 .userList {
@@ -10,4 +14,12 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
+}
+
+.door {
+    background-color: var(--color-white);
+    height: 2px;
+    width: 70px;
+    display: block;
+    position: absolute;
 }

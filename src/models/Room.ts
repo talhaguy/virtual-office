@@ -1,8 +1,8 @@
 import { RoomType } from "../../shared-src/constants"
-import { DoorSide } from "../../shared-src/models"
+import { DoorSide, RoomTitlePosition } from "../../shared-src/models"
 
 export interface Door {
-    doorSide: DoorSide
+    side: DoorSide
     position: number
 }
 
@@ -14,5 +14,6 @@ export interface Room {
     gridRowStart: number
     gridRowEnd: number
     doors: Door[]
+    titlePosition: RoomTitlePosition
     roomType: RoomType
 }

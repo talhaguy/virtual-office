@@ -8,3 +8,4 @@ export {
 export { ClientData, RoomClientData } from "./ClientData"
 export { UserColor } from "./UserColor"
 export { DoorSide } from "./DoorSide"
+export { RoomTitlePosition } from "./RoomTitlePosition"

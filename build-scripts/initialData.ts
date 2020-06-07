@@ -2,7 +2,7 @@ import { database } from "../src/database"
 import { RoomModel, UserModel } from "../src/databaseModels"
 import mongoose from "mongoose"
 import { RoomType } from "../shared-src/constants"
-import { DoorSide } from "../shared-src/models"
+import { DoorSide, RoomTitlePosition } from "../shared-src/models"
 
 export async function initialData() {
     try {
@@ -58,11 +58,8 @@ export async function initialData() {
         gridRowStart: 1,
         gridRowEnd: 3,
         roomType: RoomType.Desks,
+        titlePosition: RoomTitlePosition.Top,
         doors: [
-            {
-                side: DoorSide.Right,
-                position: 75,
-            },
             {
                 side: DoorSide.Bottom,
                 position: 75,
@@ -78,14 +75,15 @@ export async function initialData() {
         gridRowStart: 2,
         gridRowEnd: 3,
         roomType: RoomType.QuietRoom,
+        titlePosition: RoomTitlePosition.Top,
         doors: [
             {
-                side: DoorSide.Right,
-                position: 75,
+                side: DoorSide.Left,
+                position: 50,
             },
             {
                 side: DoorSide.Bottom,
-                position: 75,
+                position: 25,
             },
         ],
     })
@@ -98,16 +96,8 @@ export async function initialData() {
         gridRowStart: 3,
         gridRowEnd: 5,
         roomType: RoomType.MeetingRoom,
-        doors: [
-            {
-                side: DoorSide.Right,
-                position: 75,
-            },
-            {
-                side: DoorSide.Bottom,
-                position: 75,
-            },
-        ],
+        titlePosition: RoomTitlePosition.Bottom,
+        doors: [],
     })
 
     const breakRoom = new RoomModel({
@@ -118,14 +108,11 @@ export async function initialData() {
         gridRowStart: 3,
         gridRowEnd: 4,
         roomType: RoomType.Break,
+        titlePosition: RoomTitlePosition.Bottom,
         doors: [
             {
-                side: DoorSide.Right,
-                position: 75,
-            },
-            {
-                side: DoorSide.Bottom,
-                position: 75,
+                side: DoorSide.Left,
+                position: 50,
             },
         ],
     })

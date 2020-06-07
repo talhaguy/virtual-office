@@ -100,6 +100,7 @@ export function constructClientData(userId: string) {
                         gridRowStart: room.gridRowStart,
                         gridRowEnd: room.gridRowEnd,
                         doors: room.doors,
+                        titlePosition: room.titlePosition,
                         roomType: room.roomType,
                     }
                 })
