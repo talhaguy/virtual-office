@@ -1,8 +1,9 @@
 .rooms {
-    width: var(--breakpoint-lg);
+    width: 856px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 216px);
+    grid-auto-rows: 150px;
 }
 
 .roomsWidthSmall {
@@ -15,4 +16,20 @@
 
 .roomsWidthLarge {
     grid-column: span 3;
+}
+
+.roomsHeightSmall {
+    grid-row: span 1;
+}
+
+.roomsHeightMedium {
+    grid-row: span 2;
+}
+
+.roomsHeightLarge {
+    grid-row: span 3;
+}
+
+.height100Percent {
+    height: 100%;
 }

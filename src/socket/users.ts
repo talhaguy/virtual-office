@@ -95,7 +95,10 @@ export function constructClientData(userId: string) {
                         users: userRoomsMap[room.id]
                             ? userRoomsMap[room.id]
                             : [],
-                        width: room.width,
+                        gridColStart: room.gridColStart,
+                        gridColEnd: room.gridColEnd,
+                        gridRowStart: room.gridRowStart,
+                        gridRowEnd: room.gridRowEnd,
                         roomType: room.roomType,
                     }
                 })

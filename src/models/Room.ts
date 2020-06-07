@@ -3,6 +3,9 @@ import { RoomType } from "../../shared-src/constants"
 export interface Room {
     id: string
     name: string
-    width: number
+    gridColStart: number
+    gridColEnd: number
+    gridRowStart: number
+    gridRowEnd: number
     roomType: RoomType
 }

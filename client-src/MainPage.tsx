@@ -18,7 +18,6 @@ import { IOEvents } from "../shared-src/constants"
 import styles from "./MainPage.module.css"
 import { Panel, PanelType, PanelTitlePosition } from "./Panel"
 import { Button, ButtonType } from "./Button"
-import { RoomUserColor } from "./RoomUser"
 
 interface MainPageProps {
     username: string
@@ -29,6 +28,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     const [currentUser, setCurrentUser] = useState<OnlineUser>({
         username,
         roomId: "desksRoom",
+        color: null,
     })
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
     const [rooms, setRooms] = useState<RoomClientData[]>([])
@@ -90,20 +90,34 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         }
     }, [isLoggedIn, messages, currentUser])
 
-    const getRoomSizeClassName = (width: number) => {
+    const getRoomSizeClassName = (width: number, height: number) => {
+        let className = ""
+
         switch (width) {
             case 1:
-                return styles.roomsWidthSmall
-
+                className += styles.roomsWidthSmall
+                break
             case 2:
-                return styles.roomsWidthMedium
-
+                className += styles.roomsWidthMedium
+                break
             case 3:
-                return styles.roomsWidthLarge
-
-            default:
-                return ""
+                className += styles.roomsWidthLarge
+                break
         }
+
+        switch (height) {
+            case 1:
+                className += " " + styles.roomsHeightSmall
+                break
+            case 2:
+                className += " " + styles.roomsHeightMedium
+                break
+            case 3:
+                className += " " + styles.roomsHeightLarge
+                break
+        }
+
+        return className
     }
 
     const onRoomJoinButtonClick = (roomId: string) => {
@@ -142,33 +156,48 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
             <div>
                 <h3>Rooms</h3>
                 <div className={styles.rooms}>
-                    {rooms.map((room, i) => (
-                        <div
-                            key={i}
-                            className={getRoomSizeClassName(room.width)}
-                        >
-                            <Panel
-                                title={room.name}
-                                titleButton={
-                                    <Button
-                                        type={ButtonType.Normal}
-                                        label={"Join"}
-                                        onClickHandler={() =>
-                                            onRoomJoinButtonClick(room.id)
-                                        }
-                                    />
-                                }
-                                titlePosition={
-                                    i < 1
-                                        ? PanelTitlePosition.Top
-                                        : PanelTitlePosition.Bottom
-                                }
-                                type={PanelType.NoShadowNoBorderRadius}
+                    {rooms.map((room, i) => {
+                        console.log("for room", room.id)
+                        console.log({
+                            gridColumnStart: room.gridColStart,
+                            gridColumnEnd: room.gridColEnd,
+                            gridRowStart: room.gridRowStart,
+                            gridRowEnd: room.gridRowEnd,
+                        })
+                        return (
+                            <div
+                                key={i}
+                                style={{
+                                    gridColumnStart: room.gridColStart,
+                                    gridColumnEnd: room.gridColEnd,
+                                    gridRowStart: room.gridRowStart,
+                                    gridRowEnd: room.gridRowEnd,
+                                }}
                             >
-                                <Room room={room} />
-                            </Panel>
-                        </div>
-                    ))}
+                                <Panel
+                                    extraClassNames={styles.height100Percent}
+                                    title={room.name}
+                                    titleButton={
+                                        <Button
+                                            type={ButtonType.Normal}
+                                            label={"Join"}
+                                            onClickHandler={() =>
+                                                onRoomJoinButtonClick(room.id)
+                                            }
+                                        />
+                                    }
+                                    titlePosition={
+                                        i < 2
+                                            ? PanelTitlePosition.Top
+                                            : PanelTitlePosition.Bottom
+                                    }
+                                    type={PanelType.NoShadowNoBorderRadius}
+                                >
+                                    <Room room={room} />
+                                </Panel>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
             <Chat

@@ -52,26 +52,45 @@ export async function initialData() {
     const desksRoom = new RoomModel({
         id: "desksRoom",
         name: "Desks Room",
-        width: 3,
+        gridColStart: 1,
+        gridColEnd: 3,
+        gridRowStart: 1,
+        gridRowEnd: 3,
         roomType: RoomType.Desks,
+    })
+
+    const quietRoom = new RoomModel({
+        id: "quietRoom",
+        name: "Quiet Room",
+        gridColStart: 3,
+        gridColEnd: 5,
+        gridRowStart: 2,
+        gridRowEnd: 3,
+        roomType: RoomType.QuietRoom,
     })
 
     const meetingRoom = new RoomModel({
         id: "meetingRoom",
         name: "Meeting Room",
-        width: 2,
+        gridColStart: 2,
+        gridColEnd: 3,
+        gridRowStart: 3,
+        gridRowEnd: 5,
         roomType: RoomType.MeetingRoom,
     })
 
     const breakRoom = new RoomModel({
         id: "breakRoom",
         name: "Break Room",
-        width: 1,
+        gridColStart: 3,
+        gridColEnd: 4,
+        gridRowStart: 3,
+        gridRowEnd: 4,
         roomType: RoomType.Break,
     })
 
     try {
-        await RoomModel.create(desksRoom, meetingRoom, breakRoom)
+        await RoomModel.create(desksRoom, quietRoom, meetingRoom, breakRoom)
         console.log("done saving rooms")
     } catch (err) {
         console.log("There was an error saving rooms:")

@@ -16,6 +16,7 @@ interface PanelProps {
     titlePosition?: PanelTitlePosition
     titleButton: React.ReactNode
     type?: PanelType
+    extraClassNames: string
 }
 
 export const Panel: React.FC<PanelProps> = ({
@@ -23,6 +24,7 @@ export const Panel: React.FC<PanelProps> = ({
     titlePosition,
     titleButton,
     type,
+    extraClassNames,
     children,
 }) => {
     let panelTypeClassName: string
@@ -49,7 +51,7 @@ export const Panel: React.FC<PanelProps> = ({
 
     return (
         <div
-            className={`${styles.container} ${panelTypeClassName} ${panelTitleClassName}`}
+            className={`${styles.container} ${panelTypeClassName} ${panelTitleClassName} ${extraClassNames}`}
         >
             <div className={styles.title}>
                 <div>{title}</div>
