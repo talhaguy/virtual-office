@@ -1,0 +1,46 @@
+.container {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.userColorRed {
+    border: 5px solid #eb5757;
+    background-color: #f5abab;
+}
+
+.userColorOrange {
+    border: 5px solid #f2994a;
+    background-color: #f8cca4;
+}
+
+.userColorBlue {
+    border: 5px solid #2f80ed;
+    background-color: #97bff6;
+}
+
+.userColorYellow {
+    border: 5px solid #f2c94c;
+    background-color: #f8e4a5;
+}
+
+.userColorGreen {
+    border: 5px solid #219653;
+    background-color: #90caa9;
+}
+
+.userColorPurple {
+    border: 5px solid #bb6bd9;
+    background-color: #ddb5ec;
+}
+
+.userColorCyan {
+    border: 5px solid #6fcf97;
+    background-color: #b7e7cb;
+}
+
+.userColorSkyBlue {
+    border: 5px solid #56ccf2;
+    background-color: #aae5f8;
+}

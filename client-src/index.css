@@ -1,3 +1,23 @@
+:root {
+    --color-jet: #363636;
+    --color-tangerine: #f08700;
+    --color-cadetBlue: #56a3a6;
+    --color-fieryRose: #ff6978;
+    --color-maximumYellowRed: #ffc15e;
+    --color-white: #ffffff;
+
+    --font-primary: "Roboto", sans-serif;
+
+    --breakpoint-lg: 1200px;
+
+    font-family: var(--font-primary);
+    font-size: 14px;
+}
+
 * {
     box-sizing: border-box;
+}
+
+body {
+    margin: 0;
 }

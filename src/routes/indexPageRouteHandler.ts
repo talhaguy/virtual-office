@@ -1,6 +1,5 @@
 import { Response, Request } from "express"
 import { InitialClientData } from "../../shared-src/models/InitialClientData"
-import { RoomModel } from "../databaseModels"
 
 export function indexPageHandler(req: Request, res: Response) {
     const data: InitialClientData = {}
@@ -9,8 +8,6 @@ export function indexPageHandler(req: Request, res: Response) {
     if (user && user.username) {
         data.username = user.username
     }
-
-    RoomModel
 
     res.render("index", data)
 }

@@ -1,5 +1,44 @@
 .container {
-    border: 1px solid black;
-    min-height: 300px;
-    padding: 20px;
+    height: calc(100% + 20px);
+    width: calc(100% + 20px);
+    position: relative;
+    left: -10px;
+    top: -10px;
+}
+
+.userList {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.door {
+    background-color: var(--color-white);
+    height: 2px;
+    width: 70px;
+    display: block;
+    position: absolute;
+}
+
+.userContainer {
+    position: relative;
+}
+
+.userContainer + .userContainer {
+    margin-left: 10px;
+}
+
+.currentUserIndicator {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    color: var(--color-fieryRose);
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
+    display: inline-block;
 }

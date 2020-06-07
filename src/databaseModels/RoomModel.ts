@@ -2,6 +2,19 @@ import { Document } from "mongoose"
 import { database } from "../database/db"
 import { Room } from "../models"
 import { RoomType } from "../../shared-src/constants"
+import { DoorSide, RoomTitlePosition } from "../../shared-src/models"
+
+const DoorSchema = new database.Schema({
+    side: {
+        type: String,
+        enum: [DoorSide.Top, DoorSide.Right, DoorSide.Bottom, DoorSide.Left],
+        required: true,
+    },
+    position: {
+        type: Number,
+        required: true,
+    },
+})
 
 export const RoomModel = database.model<Room & Document>(
     "Room",
@@ -15,13 +28,39 @@ export const RoomModel = database.model<Room & Document>(
             type: String,
             required: true,
         },
-        width: {
+        gridColStart: {
             type: Number,
+            required: true,
+        },
+        gridColEnd: {
+            type: Number,
+            required: true,
+        },
+        gridRowStart: {
+            type: Number,
+            required: true,
+        },
+        gridRowEnd: {
+            type: Number,
+            required: true,
+        },
+        doors: {
+            type: [DoorSchema],
+            required: true,
+        },
+        titlePosition: {
+            type: String,
+            enum: [RoomTitlePosition.Top, RoomTitlePosition.Bottom],
             required: true,
         },
         roomType: {
             type: String,
-            enum: [RoomType.Desks, RoomType.MeetingRoom, RoomType.Break],
+            enum: [
+                RoomType.Desks,
+                RoomType.MeetingRoom,
+                RoomType.Break,
+                RoomType.QuietRoom,
+            ],
             required: true,
         },
     })

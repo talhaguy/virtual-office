@@ -5,6 +5,7 @@ export enum IOEvents {
 }
 
 export enum RoomType {
+    QuietRoom = "quietRoom",
     MeetingRoom = "meetingRoom",
     Desks = "desks",
     Break = "break",

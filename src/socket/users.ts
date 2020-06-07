@@ -1,14 +1,46 @@
 import { Document } from "mongoose"
 import { OnlineUserData, User } from "../models"
-import { OnlineUser, RoomClientData, ClientData } from "../../shared-src/models"
+import {
+    OnlineUser,
+    RoomClientData,
+    ClientData,
+    UserColor,
+} from "../../shared-src/models"
 import { UserModel, RoomModel } from "../databaseModels"
+
+const userColors = [
+    UserColor.Red,
+    UserColor.Orange,
+    UserColor.Blue,
+    UserColor.Yellow,
+    UserColor.Green,
+    UserColor.Purple,
+    UserColor.Cyan,
+    UserColor.SkyBlue,
+]
+
+let userColorIndex = -1
+
+export function getNextUserColor() {
+    if (userColorIndex === userColors.length - 1) {
+        userColorIndex = 0
+    } else {
+        userColorIndex += 1
+    }
+
+    return userColors[userColorIndex]
+}
 
 const onlineUsers: OnlineUserData = {}
 
-export function addOnlineUser(key: string, onlineUserData: OnlineUser) {
+export function addOnlineUser(
+    key: string,
+    onlineUserData: Omit<OnlineUser, "color">
+) {
     onlineUsers[key] = {
         username: onlineUserData.username,
         roomId: onlineUserData.roomId,
+        color: getNextUserColor(),
     }
 }
 
@@ -33,18 +65,21 @@ export function getOnlineUsersList() {
 }
 
 function getUserRoomsMap() {
-    return Object.values(onlineUsers).reduce<{ [key: string]: string[] }>(
-        (accum, user) => {
-            const room = accum[user.roomId]
-            if (room) {
-                room.push(user.username)
-            } else {
-                accum[user.roomId] = [user.username]
-            }
-            return accum
-        },
-        {}
-    )
+    return Object.values(onlineUsers).reduce<{
+        [key: string]: Omit<OnlineUser, "roomId">[]
+    }>((accum, user) => {
+        const room = accum[user.roomId]
+        const userValue = {
+            username: user.username,
+            color: user.color,
+        }
+        if (room) {
+            room.push(userValue)
+        } else {
+            accum[user.roomId] = [userValue]
+        }
+        return accum
+    }, {})
 }
 
 export function constructClientData(userId: string) {
@@ -60,7 +95,12 @@ export function constructClientData(userId: string) {
                         users: userRoomsMap[room.id]
                             ? userRoomsMap[room.id]
                             : [],
-                        width: room.width,
+                        gridColStart: room.gridColStart,
+                        gridColEnd: room.gridColEnd,
+                        gridRowStart: room.gridRowStart,
+                        gridRowEnd: room.gridRowEnd,
+                        doors: room.doors,
+                        titlePosition: room.titlePosition,
                         roomType: room.roomType,
                     }
                 })
