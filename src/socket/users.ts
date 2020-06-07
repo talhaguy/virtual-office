@@ -99,6 +99,7 @@ export function constructClientData(userId: string) {
                         gridColEnd: room.gridColEnd,
                         gridRowStart: room.gridRowStart,
                         gridRowEnd: room.gridRowEnd,
+                        doors: room.doors,
                         roomType: room.roomType,
                     }
                 })

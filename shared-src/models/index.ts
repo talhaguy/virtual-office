@@ -7,3 +7,4 @@ export {
 } from "./IOEventResponseData"
 export { ClientData, RoomClientData } from "./ClientData"
 export { UserColor } from "./UserColor"
+export { DoorSide } from "./DoorSide"
