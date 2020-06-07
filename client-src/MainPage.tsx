@@ -16,6 +16,8 @@ import { Room } from "./Room"
 import { IOEvents } from "../shared-src/constants"
 
 import styles from "./MainPage.module.css"
+import { Panel, PanelType, PanelTitlePosition } from "./Panel"
+import { Button, ButtonType } from "./Button"
 
 interface MainPageProps {
     username: string
@@ -144,10 +146,27 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                             key={i}
                             className={getRoomSizeClassName(room.width)}
                         >
-                            <Room
-                                room={room}
-                                onJoinButtonClick={onRoomJoinButtonClick}
-                            />
+                            <Panel
+                                title={room.name}
+                                titleButton={
+                                    <Button
+                                        type={ButtonType.Normal}
+                                        label={"Join"}
+                                        onClickHandler={() => {}}
+                                    />
+                                }
+                                titlePosition={
+                                    i < 1
+                                        ? PanelTitlePosition.Top
+                                        : PanelTitlePosition.Bottom
+                                }
+                                type={PanelType.NoShadowNoBorderRadius}
+                            >
+                                <Room
+                                    room={room}
+                                    onJoinButtonClick={onRoomJoinButtonClick}
+                                />
+                            </Panel>
                         </div>
                     ))}
                 </div>
