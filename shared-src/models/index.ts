@@ -6,3 +6,4 @@ export {
     IOEventChatMessageData,
 } from "./IOEventResponseData"
 export { ClientData, RoomClientData } from "./ClientData"
+export { UserColor } from "./UserColor"

@@ -18,6 +18,7 @@ import { IOEvents } from "../shared-src/constants"
 import styles from "./MainPage.module.css"
 import { Panel, PanelType, PanelTitlePosition } from "./Panel"
 import { Button, ButtonType } from "./Button"
+import { RoomUserColor } from "./RoomUser"
 
 interface MainPageProps {
     username: string
