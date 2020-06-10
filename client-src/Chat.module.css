@@ -1,0 +1,30 @@
+.container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    border-left: 3px solid var(--color-cadetBlue);
+    height: 100%;
+    width: 256px;
+}
+
+.header {
+    background-color: var(--color-cadetBlue);
+    padding: 10px;
+    color: var(--color-white);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.body {
+    padding: 7px;
+}
+
+.divider {
+    border-top: 3px solid var(--color-cadetBlue);
+    margin: 7px 0;
+    width: 100%;
+}
+
+.chatInput {
+    margin-bottom: 7px;
+}

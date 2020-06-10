@@ -18,7 +18,7 @@ import { IOEvents } from "../shared-src/constants"
 
 import styles from "./MainPage.module.css"
 import { Panel, PanelType, PanelTitlePosition } from "./Panel"
-import { Button, ButtonType } from "./Button"
+import { Button, ButtonSize } from "./Button"
 
 interface MainPageProps {
     username: string
@@ -91,36 +91,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         }
     }, [isLoggedIn, messages, currentUser])
 
-    const getRoomSizeClassName = (width: number, height: number) => {
-        let className = ""
-
-        switch (width) {
-            case 1:
-                className += styles.roomsWidthSmall
-                break
-            case 2:
-                className += styles.roomsWidthMedium
-                break
-            case 3:
-                className += styles.roomsWidthLarge
-                break
-        }
-
-        switch (height) {
-            case 1:
-                className += " " + styles.roomsHeightSmall
-                break
-            case 2:
-                className += " " + styles.roomsHeightMedium
-                break
-            case 3:
-                className += " " + styles.roomsHeightLarge
-                break
-        }
-
-        return className
-    }
-
     const onRoomJoinButtonClick = (roomId: string) => {
         const data: IOEventResponseData<string> = {
             data: roomId,
@@ -158,14 +128,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                 <h3>Rooms</h3>
                 <div className={styles.rooms}>
                     {rooms.map((room, i) => {
-                        console.log(
-                            room.titlePosition,
-                            "===",
-                            RoomTitlePosition.Top
-                        )
-                        console.log(
-                            room.titlePosition === RoomTitlePosition.Top
-                        )
                         return (
                             <div
                                 key={i}
@@ -181,7 +143,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                     title={room.name}
                                     titleButton={
                                         <Button
-                                            type={ButtonType.Normal}
+                                            size={ButtonSize.Normal}
                                             label={"Join"}
                                             onClickHandler={() =>
                                                 onRoomJoinButtonClick(room.id)

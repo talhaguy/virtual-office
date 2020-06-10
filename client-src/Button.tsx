@@ -1,32 +1,39 @@
 import React from "react"
 import styles from "./Button.module.css"
 
-export enum ButtonType {
+export enum ButtonSize {
     Normal,
     Full,
 }
 
+export enum ButtonType {
+    Button = "button",
+    Submit = "submit",
+}
+
 interface ButtonProps {
-    type: ButtonType
+    type?: ButtonType
+    size: ButtonSize
     label: string
-    onClickHandler: (
+    onClickHandler?: (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => void
 }
 
 export const Button: React.FC<ButtonProps> = ({
-    type,
+    type = ButtonType.Button,
+    size,
     label,
     onClickHandler,
 }) => {
-    const typeClassName =
-        type === ButtonType.Full ? styles.typeFull : styles.typeNormal
+    const sizeClassName =
+        size === ButtonSize.Full ? styles.sizeFull : styles.sizeNormal
 
     return (
         <button
-            type="button"
-            className={`${styles.button} ${typeClassName}`}
-            onClick={onClickHandler}
+            type={type}
+            className={`${styles.button} ${sizeClassName}`}
+            onClick={onClickHandler ? onClickHandler : null}
         >
             <span className={styles.textVertNudge}>{label}</span>
         </button>

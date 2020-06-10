@@ -1,4 +1,7 @@
 import React from "react"
+import { TextInput } from "./TextInput"
+import styles from "./Chat.module.css"
+import { Button, ButtonType, ButtonSize } from "./Button"
 
 interface ChatProps {
     messages: string[]
@@ -7,16 +10,26 @@ interface ChatProps {
 
 export function Chat({ messages, onSubmitHandler }: ChatProps) {
     return (
-        <div>
-            <ul>
-                {messages.map((message, i) => {
-                    return <li key={i}>{message}</li>
-                })}
-            </ul>
-            <form onSubmit={onSubmitHandler}>
-                <textarea name="message"></textarea>
-                <button type="submit">Send</button>
-            </form>
+        <div className={styles.container}>
+            <div className={styles.header}>Chat</div>
+            <div className={styles.body}>
+                <ul>
+                    {messages.map((message, i) => {
+                        return <li key={i}>{message}</li>
+                    })}
+                </ul>
+                <hr className={styles.divider} />
+                <form onSubmit={onSubmitHandler}>
+                    <div className={styles.chatInput}>
+                        <TextInput name="message" />
+                    </div>
+                    <Button
+                        type={ButtonType.Submit}
+                        size={ButtonSize.Full}
+                        label="Send"
+                    />
+                </form>
+            </div>
         </div>
     )
 }
