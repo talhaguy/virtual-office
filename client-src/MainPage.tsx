@@ -33,7 +33,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     })
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
     const [rooms, setRooms] = useState<RoomClientData[]>([])
-    const [messages, setMessages] = useState<string[]>([])
+    const [messages, setMessages] = useState<IOEventChatMessageData[]>([])
     const socketRef = useRef<SocketIOClient.Socket>(null)
     const firstRenderRef = useRef(true)
 
@@ -79,8 +79,9 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                 ioEventResponseData: IOEventResponseData<IOEventChatMessageData>
             ) => {
                 console.log("this is chat messsss")
+                console.log(ioEventResponseData)
                 const newMessages = messages.slice()
-                newMessages.push(ioEventResponseData.data.message)
+                newMessages.push(ioEventResponseData.data)
                 setMessages(newMessages)
             }
         )
@@ -103,14 +104,23 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     ) => {
         event.preventDefault()
 
-        const message = event.currentTarget.elements["message"].value
-        const data: IOEventResponseData<IOEventChatMessageData> = {
+        const messageInput = event.currentTarget.elements[
+            "message"
+        ] as HTMLInputElement
+
+        const message = messageInput.value
+        const data: IOEventResponseData<Omit<
+            IOEventChatMessageData,
+            "username" | "userColor"
+        >> = {
             data: {
                 roomId: currentUser.roomId,
                 message,
             },
         }
         socketRef.current.emit(IOEvents.UserChat, data)
+
+        messageInput.value = ""
     }
 
     return (

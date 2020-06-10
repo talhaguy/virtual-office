@@ -7,6 +7,7 @@ import {
     removeOnlineUser,
     constructClientData,
     updateUserRoom,
+    getDataForUser,
 } from "./users"
 import {
     IOEventResponseData,
@@ -91,13 +92,28 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
         socket.on(
             IOEvents.UserChat,
             (
-                ioEventResponseData: IOEventResponseData<IOEventChatMessageData>
+                ioEventResponseData: IOEventResponseData<
+                    Omit<IOEventChatMessageData, "username" | "userColor">
+                >
             ) => {
                 console.log("got a chat...", ioEventResponseData.data.message)
 
+                const user = getDataForUser(userId)
+
+                const ioChatEventResponseData: IOEventResponseData<IOEventChatMessageData> = {
+                    data: {
+                        roomId: ioEventResponseData.data.roomId,
+                        message: ioEventResponseData.data.message,
+                        username: user.username,
+                        userColor: user.color,
+                    },
+                }
+
+                console.log("emitting chat data...", ioChatEventResponseData)
+
                 io.to(ioEventResponseData.data.roomId).emit(
                     IOEvents.UserChat,
-                    ioEventResponseData
+                    ioChatEventResponseData
                 )
             }
         )

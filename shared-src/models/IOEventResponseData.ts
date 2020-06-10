@@ -1,3 +1,5 @@
+import { UserColor } from "./UserColor"
+
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface IOEventResponseData<T> {
     data: T
@@ -6,5 +8,7 @@ export interface IOEventResponseData<T> {
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface IOEventChatMessageData {
     roomId: string
+    username: string
     message: string
+    userColor: UserColor
 }
