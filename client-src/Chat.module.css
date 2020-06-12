@@ -41,8 +41,14 @@
     font-size: 0.9rem;
 }
 
-.message {
+.message,
+.statusMessage {
     font-size: 0.9rem;
+}
+
+.statusMessage {
+    color: var(--color-gray);
+    font-style: italic;
 }
 
 .form {

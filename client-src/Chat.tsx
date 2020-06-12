@@ -41,7 +41,9 @@ export function Chat({ messages, onChatMessageSubmitHandler }: ChatProps) {
                                     </div>
                                 </>
                             ) : (
-                                <div>{message.message}</div>
+                                <div className={styles.statusMessage}>
+                                    {message.message}
+                                </div>
                             )}
                         </li>
                     )
