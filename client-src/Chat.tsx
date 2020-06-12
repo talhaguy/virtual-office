@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react"
 import { TextInput } from "./TextInput"
 import styles from "./Chat.module.css"
 import { Button, ButtonType, ButtonSize } from "./Button"
-import { IOEventChatMessageData } from "../shared-src/models"
+import { IOEventChatMessageData, ChatMessageType } from "../shared-src/models"
 
 interface ChatProps {
     messages: IOEventChatMessageData[]
@@ -26,17 +26,23 @@ export function Chat({ messages, onChatMessageSubmitHandler }: ChatProps) {
                 {messages.map((message, i) => {
                     return (
                         <li key={i} className={styles.messageContainer}>
-                            <div
-                                style={{
-                                    color: message.userColor,
-                                }}
-                                className={styles.userName}
-                            >
-                                {message.username}
-                            </div>
-                            <div className={styles.message}>
-                                {message.message}
-                            </div>
+                            {message.type == ChatMessageType.UserMessage ? (
+                                <>
+                                    <div
+                                        style={{
+                                            color: message.userColor,
+                                        }}
+                                        className={styles.userName}
+                                    >
+                                        {message.username}
+                                    </div>
+                                    <div className={styles.message}>
+                                        {message.message}
+                                    </div>
+                                </>
+                            ) : (
+                                <div>{message.message}</div>
+                            )}
                         </li>
                     )
                 })}

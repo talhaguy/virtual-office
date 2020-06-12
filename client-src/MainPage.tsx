@@ -11,6 +11,7 @@ import {
     ClientData,
     IOEventResponseData,
     IOEventChatMessageData,
+    IOEventRoomChangeData,
     RoomTitlePosition,
 } from "../shared-src/models"
 import { Room } from "./Room"
@@ -93,8 +94,11 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     }, [isLoggedIn, messages, currentUser])
 
     const onRoomJoinButtonClick = (roomId: string) => {
-        const data: IOEventResponseData<string> = {
-            data: roomId,
+        const data: IOEventResponseData<IOEventRoomChangeData> = {
+            data: {
+                previousRoomId: currentUser.roomId,
+                newRoomId: roomId,
+            },
         }
         socketRef.current.emit(IOEvents.UserJoinedRoom, data)
     }
