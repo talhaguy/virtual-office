@@ -5,6 +5,8 @@
     border-left: 3px solid var(--color-cadetBlue);
     height: 100%;
     width: 256px;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
@@ -15,14 +17,36 @@
     font-weight: bold;
 }
 
-.body {
-    padding: 7px;
-}
-
 .divider {
     border-top: 3px solid var(--color-cadetBlue);
     margin: 7px 0;
     width: 100%;
+}
+
+.messageList {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    flex-grow: 1;
+    overflow: auto;
+    padding: 7px;
+}
+
+.messageContainer + .messageContainer {
+    margin-top: 15px;
+}
+
+.userName {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.message {
+    font-size: 0.9rem;
+}
+
+.form {
+    padding: 7px;
 }
 
 .chatInput {

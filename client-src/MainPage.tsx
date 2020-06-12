@@ -109,18 +109,20 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         ] as HTMLInputElement
 
         const message = messageInput.value
-        const data: IOEventResponseData<Omit<
-            IOEventChatMessageData,
-            "username" | "userColor"
-        >> = {
-            data: {
-                roomId: currentUser.roomId,
-                message,
-            },
-        }
-        socketRef.current.emit(IOEvents.UserChat, data)
+        if (message) {
+            const data: IOEventResponseData<Omit<
+                IOEventChatMessageData,
+                "username" | "userColor"
+            >> = {
+                data: {
+                    roomId: currentUser.roomId,
+                    message,
+                },
+            }
+            socketRef.current.emit(IOEvents.UserChat, data)
 
-        messageInput.value = ""
+            messageInput.value = ""
+        }
     }
 
     return (
@@ -180,7 +182,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
             </div>
             <Chat
                 messages={messages}
-                onSubmitHandler={onChatMessageSubmitHandler}
+                onChatMessageSubmitHandler={onChatMessageSubmitHandler}
             />
             <br />
             <LogoutForm />
