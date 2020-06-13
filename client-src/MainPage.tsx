@@ -11,6 +11,7 @@ import {
     ClientData,
     IOEventResponseData,
     IOEventChatMessageData,
+    IOEventRoomChangeData,
     RoomTitlePosition,
 } from "../shared-src/models"
 import { Room } from "./Room"
@@ -18,7 +19,7 @@ import { IOEvents } from "../shared-src/constants"
 
 import styles from "./MainPage.module.css"
 import { Panel, PanelType, PanelTitlePosition } from "./Panel"
-import { Button, ButtonType } from "./Button"
+import { Button, ButtonSize } from "./Button"
 
 interface MainPageProps {
     username: string
@@ -33,7 +34,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     })
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
     const [rooms, setRooms] = useState<RoomClientData[]>([])
-    const [messages, setMessages] = useState<string[]>([])
+    const [messages, setMessages] = useState<IOEventChatMessageData[]>([])
     const socketRef = useRef<SocketIOClient.Socket>(null)
     const firstRenderRef = useRef(true)
 
@@ -79,8 +80,9 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                 ioEventResponseData: IOEventResponseData<IOEventChatMessageData>
             ) => {
                 console.log("this is chat messsss")
+                console.log(ioEventResponseData)
                 const newMessages = messages.slice()
-                newMessages.push(ioEventResponseData.data.message)
+                newMessages.push(ioEventResponseData.data)
                 setMessages(newMessages)
             }
         )
@@ -91,39 +93,12 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         }
     }, [isLoggedIn, messages, currentUser])
 
-    const getRoomSizeClassName = (width: number, height: number) => {
-        let className = ""
-
-        switch (width) {
-            case 1:
-                className += styles.roomsWidthSmall
-                break
-            case 2:
-                className += styles.roomsWidthMedium
-                break
-            case 3:
-                className += styles.roomsWidthLarge
-                break
-        }
-
-        switch (height) {
-            case 1:
-                className += " " + styles.roomsHeightSmall
-                break
-            case 2:
-                className += " " + styles.roomsHeightMedium
-                break
-            case 3:
-                className += " " + styles.roomsHeightLarge
-                break
-        }
-
-        return className
-    }
-
     const onRoomJoinButtonClick = (roomId: string) => {
-        const data: IOEventResponseData<string> = {
-            data: roomId,
+        const data: IOEventResponseData<IOEventRoomChangeData> = {
+            data: {
+                previousRoomId: currentUser.roomId,
+                newRoomId: roomId,
+            },
         }
         socketRef.current.emit(IOEvents.UserJoinedRoom, data)
     }
@@ -133,85 +108,87 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     ) => {
         event.preventDefault()
 
-        const message = event.currentTarget.elements["message"].value
-        const data: IOEventResponseData<IOEventChatMessageData> = {
-            data: {
-                roomId: currentUser.roomId,
-                message,
-            },
+        const messageInput = event.currentTarget.elements[
+            "message"
+        ] as HTMLInputElement
+
+        const message = messageInput.value
+        if (message) {
+            const data: IOEventResponseData<Omit<
+                IOEventChatMessageData,
+                "username" | "userColor"
+            >> = {
+                data: {
+                    roomId: currentUser.roomId,
+                    message,
+                },
+            }
+            socketRef.current.emit(IOEvents.UserChat, data)
+
+            messageInput.value = ""
         }
-        socketRef.current.emit(IOEvents.UserChat, data)
     }
 
     return (
-        <div>
-            <h2>Main Page</h2>
-            <div>
-                Online Users:
-                <ul>
-                    {onlineUsers.map((user, i) => (
-                        <li key={i}>{user.username}</li>
-                    ))}
-                </ul>
-            </div>
-            <div>
-                <h3>Rooms</h3>
-                <div className={styles.rooms}>
-                    {rooms.map((room, i) => {
-                        console.log(
-                            room.titlePosition,
-                            "===",
-                            RoomTitlePosition.Top
-                        )
-                        console.log(
-                            room.titlePosition === RoomTitlePosition.Top
-                        )
-                        return (
-                            <div
-                                key={i}
-                                style={{
-                                    gridColumnStart: room.gridColStart,
-                                    gridColumnEnd: room.gridColEnd,
-                                    gridRowStart: room.gridRowStart,
-                                    gridRowEnd: room.gridRowEnd,
-                                }}
-                            >
-                                <Panel
-                                    extraClassNames={styles.height100Percent}
-                                    title={room.name}
-                                    titleButton={
-                                        <Button
-                                            type={ButtonType.Normal}
-                                            label={"Join"}
-                                            onClickHandler={() =>
-                                                onRoomJoinButtonClick(room.id)
+        <>
+            <div className={styles.roomChatContainer}>
+                <div className={styles.roomContainer}>
+                    <div className={styles.rooms}>
+                        {rooms.map((room, i) => {
+                            return (
+                                <div
+                                    key={i}
+                                    style={{
+                                        gridColumnStart: room.gridColStart,
+                                        gridColumnEnd: room.gridColEnd,
+                                        gridRowStart: room.gridRowStart,
+                                        gridRowEnd: room.gridRowEnd,
+                                    }}
+                                >
+                                    <Panel
+                                        extraClassNames={
+                                            styles.height100Percent
+                                        }
+                                        title={room.name}
+                                        titleButton={
+                                            <Button
+                                                size={ButtonSize.Normal}
+                                                label={"Join"}
+                                                onClickHandler={() =>
+                                                    onRoomJoinButtonClick(
+                                                        room.id
+                                                    )
+                                                }
+                                            />
+                                        }
+                                        titlePosition={
+                                            room.titlePosition ===
+                                            RoomTitlePosition.Top
+                                                ? PanelTitlePosition.Top
+                                                : PanelTitlePosition.Bottom
+                                        }
+                                        type={PanelType.DropShadowAsBorder}
+                                    >
+                                        <Room
+                                            room={room}
+                                            currentUserName={
+                                                currentUser.username
                                             }
                                         />
-                                    }
-                                    titlePosition={
-                                        room.titlePosition ===
-                                        RoomTitlePosition.Top
-                                            ? PanelTitlePosition.Top
-                                            : PanelTitlePosition.Bottom
-                                    }
-                                    type={PanelType.DropShadowAsBorder}
-                                >
-                                    <Room
-                                        room={room}
-                                        currentUserName={currentUser.username}
-                                    />
-                                </Panel>
-                            </div>
-                        )
-                    })}
+                                    </Panel>
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
+                <Chat
+                    messages={messages}
+                    onChatMessageSubmitHandler={onChatMessageSubmitHandler}
+                />
             </div>
-            <Chat
-                messages={messages}
-                onSubmitHandler={onChatMessageSubmitHandler}
-            />
-            <br />
-            <LogoutForm />
-        </div>
+            <div className={styles.logoutContainer}>
+                <LogoutForm />
+            </div>
+        </>
     )
 }

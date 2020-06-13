@@ -1,6 +1,19 @@
+.roomChatContainer {
+    display: flex;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+.roomContainer {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+
 .rooms {
     width: 856px;
-    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(4, 216px);
     grid-auto-rows: 150px;
@@ -33,4 +46,13 @@
 
 .height100Percent {
     height: 100%;
+}
+
+.logoutContainer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+@media (max-width: 1150px) {
 }

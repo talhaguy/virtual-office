@@ -7,11 +7,14 @@ import {
     removeOnlineUser,
     constructClientData,
     updateUserRoom,
+    getDataForUser,
 } from "./users"
 import {
     IOEventResponseData,
     IOEventChatMessageData,
+    IOEventRoomChangeData,
     ClientData,
+    ChatMessageType,
 } from "../../shared-src/models"
 import { IOEvents } from "../../shared-src/constants"
 
@@ -67,13 +70,17 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
 
         socket.on(
             IOEvents.UserJoinedRoom,
-            (ioEventResponseData: IOEventResponseData<string>) => {
+            (
+                ioEventResponseData: IOEventResponseData<IOEventRoomChangeData>
+            ) => {
                 console.log("join", ioEventResponseData.data)
 
-                socket.leaveAll()
-                socket.join(ioEventResponseData.data)
+                const user = getDataForUser(userId)
 
-                updateUserRoom(userId, ioEventResponseData.data)
+                socket.leaveAll()
+                socket.join(ioEventResponseData.data.newRoomId)
+
+                updateUserRoom(userId, ioEventResponseData.data.newRoomId)
 
                 constructClientData(userId)
                     .then((clientData) => {
@@ -81,6 +88,36 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
                             data: clientData,
                         }
                         io.emit(IOEvents.OnlineUsersChange, data)
+
+                        const time = new Date().getTime()
+
+                        const ioChatEventResponseDataToPreviousRoom: IOEventResponseData<IOEventChatMessageData> = {
+                            data: {
+                                type: ChatMessageType.Status,
+                                roomId: ioEventResponseData.data.previousRoomId,
+                                message: `${user.username} left ${ioEventResponseData.data.previousRoomId} and joined ${ioEventResponseData.data.newRoomId}`,
+                                time,
+                            },
+                        }
+
+                        const ioChatEventResponseDataToNewRoom: IOEventResponseData<IOEventChatMessageData> = {
+                            data: {
+                                type: ChatMessageType.Status,
+                                roomId: ioEventResponseData.data.newRoomId,
+                                message: `${user.username} left ${ioEventResponseData.data.previousRoomId} and joined ${ioEventResponseData.data.newRoomId}`,
+                                time,
+                            },
+                        }
+
+                        io.to(ioEventResponseData.data.previousRoomId).emit(
+                            IOEvents.UserChat,
+                            ioChatEventResponseDataToPreviousRoom
+                        )
+
+                        io.to(ioEventResponseData.data.newRoomId).emit(
+                            IOEvents.UserChat,
+                            ioChatEventResponseDataToNewRoom
+                        )
                     })
                     .catch((error) => {
                         console.error(error)
@@ -91,13 +128,31 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
         socket.on(
             IOEvents.UserChat,
             (
-                ioEventResponseData: IOEventResponseData<IOEventChatMessageData>
+                ioEventResponseData: IOEventResponseData<
+                    Omit<IOEventChatMessageData, "username" | "userColor">
+                >
             ) => {
                 console.log("got a chat...", ioEventResponseData.data.message)
 
+                const user = getDataForUser(userId)
+                const time = new Date().getTime()
+
+                const ioChatEventResponseData: IOEventResponseData<IOEventChatMessageData> = {
+                    data: {
+                        type: ChatMessageType.UserMessage,
+                        roomId: ioEventResponseData.data.roomId,
+                        message: ioEventResponseData.data.message,
+                        username: user.username,
+                        userColor: user.color,
+                        time,
+                    },
+                }
+
+                console.log("emitting chat data...", ioChatEventResponseData)
+
                 io.to(ioEventResponseData.data.roomId).emit(
                     IOEvents.UserChat,
-                    ioEventResponseData
+                    ioChatEventResponseData
                 )
             }
         )

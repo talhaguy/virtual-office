@@ -1,7 +1,9 @@
-.typeNormal {
+.sizeNormal {
 }
 
-.typeFull {
+.sizeFull {
+    width: 100%;
+    display: block;
 }
 
 .button {
@@ -14,7 +16,7 @@
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 1px 15px;
+    padding: 3px 15px;
     cursor: pointer;
 }
 
