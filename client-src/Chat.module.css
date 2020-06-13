@@ -36,9 +36,12 @@
     margin-top: 15px;
 }
 
+.userNameContainer {
+    font-size: 0.9rem;
+}
+
 .userName {
     font-weight: bold;
-    font-size: 0.9rem;
 }
 
 .message,

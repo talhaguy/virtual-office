@@ -89,11 +89,14 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
                         }
                         io.emit(IOEvents.OnlineUsersChange, data)
 
+                        const time = new Date().getTime()
+
                         const ioChatEventResponseDataToPreviousRoom: IOEventResponseData<IOEventChatMessageData> = {
                             data: {
                                 type: ChatMessageType.Status,
                                 roomId: ioEventResponseData.data.previousRoomId,
                                 message: `${user.username} left ${ioEventResponseData.data.previousRoomId} and joined ${ioEventResponseData.data.newRoomId}`,
+                                time,
                             },
                         }
 
@@ -102,6 +105,7 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
                                 type: ChatMessageType.Status,
                                 roomId: ioEventResponseData.data.newRoomId,
                                 message: `${user.username} left ${ioEventResponseData.data.previousRoomId} and joined ${ioEventResponseData.data.newRoomId}`,
+                                time,
                             },
                         }
 
@@ -131,6 +135,7 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
                 console.log("got a chat...", ioEventResponseData.data.message)
 
                 const user = getDataForUser(userId)
+                const time = new Date().getTime()
 
                 const ioChatEventResponseData: IOEventResponseData<IOEventChatMessageData> = {
                     data: {
@@ -139,6 +144,7 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
                         message: ioEventResponseData.data.message,
                         username: user.username,
                         userColor: user.color,
+                        time,
                     },
                 }
 

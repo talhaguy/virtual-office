@@ -23,6 +23,7 @@ export interface IOEventChatMessageData {
     username?: string
     userColor?: UserColor
     message: string
+    time: number
 }
 
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix

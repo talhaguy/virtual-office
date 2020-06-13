@@ -19,6 +19,11 @@ export function Chat({ messages, onChatMessageSubmitHandler }: ChatProps) {
         messageListRef.current.scrollTop = messageListRef.current.scrollHeight
     })
 
+    const getFormattedMessageDate = (time: number) => {
+        const date = new Date(time)
+        return `${date.getHours()}:${date.getMinutes()}`
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>Chat</div>
@@ -32,9 +37,13 @@ export function Chat({ messages, onChatMessageSubmitHandler }: ChatProps) {
                                         style={{
                                             color: message.userColor,
                                         }}
-                                        className={styles.userName}
+                                        className={styles.userNameContainer}
                                     >
-                                        {message.username}
+                                        <span className={styles.userName}>
+                                            {message.username}
+                                        </span>
+                                        ,{" "}
+                                        {getFormattedMessageDate(message.time)}
                                     </div>
                                     <div className={styles.message}>
                                         {message.message}
