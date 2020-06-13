@@ -130,66 +130,65 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     }
 
     return (
-        <div>
-            <h2>Main Page</h2>
-            <div>
-                Online Users:
-                <ul>
-                    {onlineUsers.map((user, i) => (
-                        <li key={i}>{user.username}</li>
-                    ))}
-                </ul>
-            </div>
-            <div>
-                <h3>Rooms</h3>
-                <div className={styles.rooms}>
-                    {rooms.map((room, i) => {
-                        return (
-                            <div
-                                key={i}
-                                style={{
-                                    gridColumnStart: room.gridColStart,
-                                    gridColumnEnd: room.gridColEnd,
-                                    gridRowStart: room.gridRowStart,
-                                    gridRowEnd: room.gridRowEnd,
-                                }}
-                            >
-                                <Panel
-                                    extraClassNames={styles.height100Percent}
-                                    title={room.name}
-                                    titleButton={
-                                        <Button
-                                            size={ButtonSize.Normal}
-                                            label={"Join"}
-                                            onClickHandler={() =>
-                                                onRoomJoinButtonClick(room.id)
+        <>
+            <div className={styles.roomChatContainer}>
+                <div className={styles.roomContainer}>
+                    <div className={styles.rooms}>
+                        {rooms.map((room, i) => {
+                            return (
+                                <div
+                                    key={i}
+                                    style={{
+                                        gridColumnStart: room.gridColStart,
+                                        gridColumnEnd: room.gridColEnd,
+                                        gridRowStart: room.gridRowStart,
+                                        gridRowEnd: room.gridRowEnd,
+                                    }}
+                                >
+                                    <Panel
+                                        extraClassNames={
+                                            styles.height100Percent
+                                        }
+                                        title={room.name}
+                                        titleButton={
+                                            <Button
+                                                size={ButtonSize.Normal}
+                                                label={"Join"}
+                                                onClickHandler={() =>
+                                                    onRoomJoinButtonClick(
+                                                        room.id
+                                                    )
+                                                }
+                                            />
+                                        }
+                                        titlePosition={
+                                            room.titlePosition ===
+                                            RoomTitlePosition.Top
+                                                ? PanelTitlePosition.Top
+                                                : PanelTitlePosition.Bottom
+                                        }
+                                        type={PanelType.DropShadowAsBorder}
+                                    >
+                                        <Room
+                                            room={room}
+                                            currentUserName={
+                                                currentUser.username
                                             }
                                         />
-                                    }
-                                    titlePosition={
-                                        room.titlePosition ===
-                                        RoomTitlePosition.Top
-                                            ? PanelTitlePosition.Top
-                                            : PanelTitlePosition.Bottom
-                                    }
-                                    type={PanelType.DropShadowAsBorder}
-                                >
-                                    <Room
-                                        room={room}
-                                        currentUserName={currentUser.username}
-                                    />
-                                </Panel>
-                            </div>
-                        )
-                    })}
+                                    </Panel>
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
+                <Chat
+                    messages={messages}
+                    onChatMessageSubmitHandler={onChatMessageSubmitHandler}
+                />
             </div>
-            <Chat
-                messages={messages}
-                onChatMessageSubmitHandler={onChatMessageSubmitHandler}
-            />
-            <br />
-            <LogoutForm />
-        </div>
+            <div className={styles.logoutContainer}>
+                <LogoutForm />
+            </div>
+        </>
     )
 }

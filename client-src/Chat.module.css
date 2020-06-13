@@ -1,12 +1,11 @@
 .container {
-    position: fixed;
-    top: 0;
-    right: 0;
     border-left: 3px solid var(--color-cadetBlue);
     height: 100%;
     width: 256px;
     display: flex;
     flex-direction: column;
+    background-color: var(--color-white);
+    min-width: 256px;
 }
 
 .header {
