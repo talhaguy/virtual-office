@@ -21,7 +21,11 @@ export function Chat({ messages, onChatMessageSubmitHandler }: ChatProps) {
 
     const getFormattedMessageDate = (time: number) => {
         const date = new Date(time)
-        return `${date.getHours()}:${date.getMinutes()}`
+        const hours = date.getHours()
+        const minutes = date.getMinutes()
+        return `${hours === 0 ? "12" : hours > 12 ? hours - 12 : hours}:${
+            minutes < 10 ? `0${minutes}` : minutes
+        } ${hours >= 12 ? "pm" : "am"}`
     }
 
     return (
