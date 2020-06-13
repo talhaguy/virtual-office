@@ -1,8 +1,11 @@
 import React, { useRef, useEffect } from "react"
-import { TextInput } from "./TextInput"
+import { TextInput } from "../TextInput"
 import styles from "./Chat.module.css"
-import { Button, ButtonType, ButtonSize } from "./Button"
-import { IOEventChatMessageData, ChatMessageType } from "../shared-src/models"
+import { Button, ButtonType, ButtonSize } from "../Button"
+import {
+    IOEventChatMessageData,
+    ChatMessageType,
+} from "../../../shared-src/models"
 
 interface ChatProps {
     messages: IOEventChatMessageData[]

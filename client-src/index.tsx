@@ -3,7 +3,9 @@ import ReactDOM from "react-dom"
 
 import { InitialClientData } from "../shared-src/models"
 import { DependenciesContext } from "./DependenciesContext"
-import { App } from "./App"
+import { App } from "./components/App"
+
+import "./index.css"
 
 declare const INITIAL_CLIENT_DATA: InitialClientData
 

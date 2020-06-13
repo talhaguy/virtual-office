@@ -1,5 +1,5 @@
 import React from "react"
-import { UserColor } from "../shared-src/models/UserColor"
+import { UserColor } from "../../../shared-src/models/UserColor"
 import styles from "./RoomUser.module.css"
 
 interface RoomUserProps {
