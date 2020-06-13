@@ -1,7 +1,7 @@
 import React from "react"
 
-import { RoomClientData, DoorSide } from "../shared-src/models"
-import { RoomUser } from "./RoomUser"
+import { RoomClientData, DoorSide } from "../../../shared-src/models"
+import { RoomUser } from "../RoomUser"
 
 import styles from "./Room.module.css"
 

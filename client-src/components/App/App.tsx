@@ -1,13 +1,11 @@
 import React, { useContext, useState } from "react"
 import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom"
 
-import { LoginPage } from "./LoginPage"
-import { RegisterPage } from "./RegisterPage"
-import { DependenciesContext } from "./DependenciesContext"
-import { MainPage } from "./MainPage"
-import { NotFoundPage } from "./NotFoundPage"
-
-import "./index.css"
+import { LoginPage } from "../LoginPage"
+import { RegisterPage } from "../RegisterPage"
+import { DependenciesContext } from "../../DependenciesContext"
+import { MainPage } from "../MainPage"
+import { NotFoundPage } from "../NotFoundPage"
 
 export function App() {
     const { username } = useContext(DependenciesContext)

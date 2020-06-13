@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react"
 import io from "socket.io-client"
 
-import { LogoutForm } from "./LogoutForm"
-import { Chat } from "./Chat"
+import { LogoutForm } from "../LogoutForm"
+import { Chat } from "../Chat"
 import {
     OnlineUser,
     RoomClientData,
@@ -13,13 +13,13 @@ import {
     IOEventChatMessageData,
     IOEventRoomChangeData,
     RoomTitlePosition,
-} from "../shared-src/models"
-import { Room } from "./Room"
-import { IOEvents } from "../shared-src/constants"
+} from "../../../shared-src/models"
+import { Room } from "../Room"
+import { IOEvents } from "../../../shared-src/constants"
 
 import styles from "./MainPage.module.css"
-import { Panel, PanelType, PanelTitlePosition } from "./Panel"
-import { Button, ButtonSize } from "./Button"
+import { Panel, PanelType, PanelTitlePosition } from "../Panel"
+import { Button, ButtonSize } from "../Button"
 
 interface MainPageProps {
     username: string
@@ -116,7 +116,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         if (message) {
             const data: IOEventResponseData<Omit<
                 IOEventChatMessageData,
-                "username" | "userColor"
+                "username" | "userColor" | "time" | "type"
             >> = {
                 data: {
                     roomId: currentUser.roomId,

@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, ButtonType, ButtonSize } from "./Button"
+import { Button, ButtonType, ButtonSize } from "../Button"
 import styles from "./LogoutForm.module.css"
 
 interface LogoutFormProps {

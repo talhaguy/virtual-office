@@ -129,7 +129,10 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
             IOEvents.UserChat,
             (
                 ioEventResponseData: IOEventResponseData<
-                    Omit<IOEventChatMessageData, "username" | "userColor">
+                    Omit<
+                        IOEventChatMessageData,
+                        "username" | "userColor" | "time" | "type"
+                    >
                 >
             ) => {
                 console.log("got a chat...", ioEventResponseData.data.message)
