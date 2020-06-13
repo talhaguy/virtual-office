@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import styles from "./TextInput.module.css"
 
 interface TextInputProps {
@@ -14,15 +14,32 @@ export const TextInput: React.FC<TextInputProps> = ({
     label,
     autocomplete = "on",
 }) => {
+    const [hasValue, setHasValue] = useState(false)
+
+    const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setHasValue(event.currentTarget.value !== "")
+    }
+
     return (
-        <div>
-            {label ? <label>{label}</label> : ""}
+        <div className={styles.container}>
             <input
                 type={type}
                 name={name}
                 autoComplete={autocomplete}
                 className={styles.input}
+                onChange={onChangeHandler}
             ></input>
+            {label ? (
+                <label
+                    className={`${styles.label} ${
+                        hasValue ? styles.labelFloat : ""
+                    }`}
+                >
+                    {label}
+                </label>
+            ) : (
+                ""
+            )}
         </div>
     )
 }

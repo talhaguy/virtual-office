@@ -15,10 +15,14 @@ export const LoginPage = () => (
             <Panel title="Login">
                 <form action="/login" method="POST">
                     <FormRow>
-                        <TextInput name="username" />
+                        <TextInput label="Username" name="username" />
                     </FormRow>
                     <FormRow>
-                        <TextInput type="password" name="password" />
+                        <TextInput
+                            label="Password"
+                            type="password"
+                            name="password"
+                        />
                     </FormRow>
                     <FormRow verticalSpacing={FormRowVerticalSpacing.Large}>
                         <Button
