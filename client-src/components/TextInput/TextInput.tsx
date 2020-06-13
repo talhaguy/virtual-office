@@ -15,6 +15,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     autocomplete = "on",
 }) => {
     const [hasValue, setHasValue] = useState(false)
+    const id = `textInput-${name}`
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHasValue(event.currentTarget.value !== "")
@@ -28,12 +29,14 @@ export const TextInput: React.FC<TextInputProps> = ({
                 autoComplete={autocomplete}
                 className={styles.input}
                 onChange={onChangeHandler}
+                id={id}
             ></input>
             {label ? (
                 <label
                     className={`${styles.label} ${
                         hasValue ? styles.labelFloat : ""
                     }`}
+                    htmlFor={id}
                 >
                     {label}
                 </label>
