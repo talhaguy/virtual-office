@@ -23,13 +23,13 @@ export const verifyFunction: VerifyFunctionWithDeps = (
                 done(null, user)
             } else {
                 done(null, false, {
-                    message: "Wong password",
+                    message: "Username or password is not correct",
                 })
             }
         })
         .catch(() => {
             done(null, false, {
-                message: "User not found",
+                message: "Username or password is not correct",
             })
         })
 }
