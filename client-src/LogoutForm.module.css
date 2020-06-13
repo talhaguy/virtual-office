@@ -1,0 +1,17 @@
+.container {
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+    padding: 5px 7px;
+    border: 1px solid var(--color-cadetBlue);
+    border-radius: 3px;
+    font-size: 0.9rem;
+}
+
+.userName {
+    font-weight: bold;
+}
+
+.buttonContainer {
+    margin-left: 13px;
+}

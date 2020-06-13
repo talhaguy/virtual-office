@@ -187,7 +187,10 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                 />
             </div>
             <div className={styles.logoutContainer}>
-                <LogoutForm />
+                <LogoutForm
+                    username={currentUser.username}
+                    userColor={currentUser.color}
+                />
             </div>
         </>
     )
