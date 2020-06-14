@@ -37,3 +37,17 @@
     padding: 0 3px;
     z-index: 200;
 }
+
+.error .label {
+    color: var(--color-fieryRose);
+}
+
+.error .input {
+    border-color: var(--color-fieryRose);
+}
+
+.errorMessage {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: var(--color-fieryRose);
+}

@@ -6,6 +6,9 @@ interface TextInputProps {
     name: string
     label?: string
     autocomplete?: string
+    isValid?: boolean
+    errorMessage?: string
+    validation?: (value: string) => void
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -13,6 +16,9 @@ export const TextInput: React.FC<TextInputProps> = ({
     name,
     label,
     autocomplete = "on",
+    isValid = true,
+    errorMessage = "",
+    validation = () => {},
 }) => {
     const [hasValue, setHasValue] = useState(false)
     const id = `textInput-${name}`
@@ -21,14 +27,22 @@ export const TextInput: React.FC<TextInputProps> = ({
         setHasValue(event.currentTarget.value !== "")
     }
 
+    const onBlurHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.currentTarget.value
+        if (inputValue !== "") {
+            validation(event.currentTarget.value)
+        }
+    }
+
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${isValid ? "" : styles.error}`}>
             <input
                 type={type}
                 name={name}
                 autoComplete={autocomplete}
                 className={styles.input}
                 onChange={onChangeHandler}
+                onBlur={onBlurHandler}
                 id={id}
             ></input>
             {label ? (
@@ -40,6 +54,11 @@ export const TextInput: React.FC<TextInputProps> = ({
                 >
                     {label}
                 </label>
+            ) : (
+                ""
+            )}
+            {!isValid ? (
+                <div className={styles.errorMessage}>{errorMessage}</div>
             ) : (
                 ""
             )}
