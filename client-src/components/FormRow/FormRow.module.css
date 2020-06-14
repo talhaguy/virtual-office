@@ -1,0 +1,7 @@
+.row + .verticalSpacingMedium {
+    margin-top: 10px;
+}
+
+.row + .verticalSpacingLarge {
+    margin-top: 15px;
+}

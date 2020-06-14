@@ -17,6 +17,8 @@
                 <% if (typeof username !== "undefined") { %>
                 username: "<%= username %>",
                 <% } %>
+
+                flashMessages: <%- JSON.stringify(flashMessages) %>,
             }
         </script>
         <div id="root"></div>

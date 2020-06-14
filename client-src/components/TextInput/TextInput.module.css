@@ -1,8 +1,53 @@
+.container {
+    position: relative;
+}
+
+.label {
+    position: absolute;
+    top: 0;
+    left: 12px;
+    z-index: 50;
+    height: 30px;
+    line-height: 30px;
+    font-size: 1rem;
+    color: var(--color-cadetBlue);
+}
+
 .input {
     border: 2px solid var(--color-cadetBlue);
     border-radius: 3px;
-    box-shadow: inset 0px 3px 4px rgba(0, 0, 0, 0.25);
     padding: 5px 9px;
     font-size: 1rem;
     width: 100%;
+    background-color: transparent;
+    z-index: 100;
+    position: relative;
+    height: 30px;
+    line-height: 30px;
+}
+
+.labelFloat,
+.input:focus + .label {
+    font-size: 0.7rem;
+    height: 12px;
+    line-height: 12px;
+    background-color: white;
+    top: -5px;
+    left: 9px;
+    padding: 0 3px;
+    z-index: 200;
+}
+
+.error .label {
+    color: var(--color-fieryRose);
+}
+
+.error .input {
+    border-color: var(--color-fieryRose);
+}
+
+.errorMessage {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: var(--color-fieryRose);
 }

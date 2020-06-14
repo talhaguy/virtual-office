@@ -1,26 +1,67 @@
-import React from "react"
+import React, { useState } from "react"
 import styles from "./TextInput.module.css"
 
 interface TextInputProps {
+    type?: string
     name: string
     label?: string
     autocomplete?: string
+    isValid?: boolean
+    errorMessage?: string
+    validation?: (value: string) => void
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
+    type = "text",
     name,
     label,
     autocomplete = "on",
+    isValid = true,
+    errorMessage = "",
+    validation = () => {},
 }) => {
+    const [hasValue, setHasValue] = useState(false)
+    const id = `textInput-${name}`
+
+    const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setHasValue(event.currentTarget.value !== "")
+    }
+
+    const onBlurHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.currentTarget.value
+        if (inputValue !== "") {
+            validation(event.currentTarget.value)
+        }
+    }
+
     return (
-        <div>
-            {label ? <label>{label}</label> : ""}
+        <div className={`${styles.container} ${isValid ? "" : styles.error}`}>
             <input
-                type="text"
+                type={type}
                 name={name}
                 autoComplete={autocomplete}
                 className={styles.input}
+                onChange={onChangeHandler}
+                onBlur={onBlurHandler}
+                id={id}
             ></input>
+            {label ? (
+                <label
+                    className={`${styles.label} ${
+                        hasValue ? styles.labelFloat : ""
+                    }`}
+                    htmlFor={id}
+                >
+                    {label}
+                </label>
+            ) : (
+                ""
+            )}
+            {!isValid ? (
+                <div className={styles.errorMessage}>{errorMessage}</div>
+            ) : (
+                ""
+            )}
         </div>
     )
 }

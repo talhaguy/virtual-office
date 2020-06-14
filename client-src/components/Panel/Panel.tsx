@@ -14,9 +14,9 @@ export enum PanelTitlePosition {
 interface PanelProps {
     title: string
     titlePosition?: PanelTitlePosition
-    titleButton: React.ReactNode
+    titleButton?: React.ReactNode
     type?: PanelType
-    extraClassNames: string
+    extraClassNames?: string
 }
 
 export const Panel: React.FC<PanelProps> = ({
@@ -24,17 +24,17 @@ export const Panel: React.FC<PanelProps> = ({
     titlePosition,
     titleButton,
     type,
-    extraClassNames,
+    extraClassNames = "",
     children,
 }) => {
     let panelTypeClassName: string
     switch (type) {
-        case PanelType.Normal:
-            panelTypeClassName = styles.typeNormal
-            break
         case PanelType.DropShadowAsBorder:
-        default:
             panelTypeClassName = styles.typeDropShadowAsBorder
+            break
+        case PanelType.Normal:
+        default:
+            panelTypeClassName = styles.typeNormal
             break
     }
 
@@ -55,7 +55,7 @@ export const Panel: React.FC<PanelProps> = ({
         >
             <div className={styles.title}>
                 <div>{title}</div>
-                <div>{titleButton}</div>
+                {titleButton ? <div>{titleButton}</div> : ""}
             </div>
             <div className={styles.contents}>{children}</div>
         </div>

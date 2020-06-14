@@ -8,7 +8,9 @@ import { MainPage } from "../MainPage"
 import { NotFoundPage } from "../NotFoundPage"
 
 export function App() {
-    const { username } = useContext(DependenciesContext)
+    const {
+        initialClientData: { username },
+    } = useContext(DependenciesContext)
     const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)
 
     return (

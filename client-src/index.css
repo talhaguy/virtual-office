@@ -22,3 +22,18 @@
 body {
     margin: 0;
 }
+
+h1 {
+    color: var(--color-cadetBlue);
+    letter-spacing: 0.1em;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 10px 0;
+}
+
+a {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--color-tangerine);
+}
