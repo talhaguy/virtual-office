@@ -7,7 +7,6 @@ import { Button, ButtonSize, ButtonType } from "../Button"
 import { FormRow, FormRowVerticalSpacing } from "../FormRow"
 import { WarningMessage } from "../WarningMessage"
 import { DependenciesContext } from "../../DependenciesContext"
-import { RegexPatterns } from "../../../shared-src/constants"
 
 import styles from "./LoginPage.module.css"
 
@@ -18,22 +17,12 @@ interface LoginFormHTMLFormControlsCollection
 }
 
 export const LoginPage = () => {
-    const { flashMessages } = useContext(DependenciesContext)
+    const {
+        initialClientData: { flashMessages },
+        validation: { validateEmail, validatePassword },
+    } = useContext(DependenciesContext)
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isPasswordValid, setIsPasswordValid] = useState(true)
-
-    const validateEmail = (email: string) => {
-        const emailRegex = new RegExp(RegexPatterns.Email, "i")
-        const isEmailValid = emailRegex.test(email)
-        setIsEmailValid(isEmailValid)
-        return isEmailValid
-    }
-
-    const validatePassword = (password: string) => {
-        const isPasswordValid = password !== ""
-        setIsPasswordValid(isPasswordValid)
-        return isPasswordValid
-    }
 
     const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -43,9 +32,11 @@ export const LoginPage = () => {
 
         // validate username
         const isEmailValid = validateEmail(username.value)
+        setIsEmailValid(isEmailValid)
 
         // validate password
         const isPasswordValid = validatePassword(password.value)
+        setIsPasswordValid(isPasswordValid)
 
         if (isEmailValid && isPasswordValid) {
             event.currentTarget.submit()

@@ -1,6 +1,7 @@
 import { IVerifyOptions } from "passport-local"
 import { User } from "../models"
 import { Document, Model } from "mongoose"
+import { validateEmail, validatePassword } from "../../shared-src/validation"
 
 interface VerifyFunctionWithDeps {
     (
@@ -17,21 +18,30 @@ export const verifyFunction: VerifyFunctionWithDeps = (
     password,
     done
 ) => {
-    UserModel.findOne({ username })
-        .then((user) => {
-            if (user.password === password) {
-                done(null, user)
-            } else {
+    const isValidEmail = validateEmail(username)
+    const isValidPassword = validatePassword(password)
+
+    if (isValidEmail && isValidPassword) {
+        UserModel.findOne({ username })
+            .then((user) => {
+                if (user.password === password) {
+                    done(null, user)
+                } else {
+                    done(null, false, {
+                        message: "Username or password is not correct",
+                    })
+                }
+            })
+            .catch(() => {
                 done(null, false, {
                     message: "Username or password is not correct",
                 })
-            }
-        })
-        .catch(() => {
-            done(null, false, {
-                message: "Username or password is not correct",
             })
+    } else {
+        done(null, false, {
+            message: "Username or password is not correct format",
         })
+    }
 }
 
 interface SerializeUser {
