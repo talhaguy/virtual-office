@@ -1,6 +1,7 @@
+import mongoose from "mongoose"
+import { hash } from "bcrypt"
 import { database } from "../src/database"
 import { RoomModel, UserModel } from "../src/databaseModels"
-import mongoose from "mongoose"
 import { RoomType } from "../shared-src/constants"
 import { DoorSide, RoomTitlePosition } from "../shared-src/models"
 
@@ -24,9 +25,20 @@ export async function initialData() {
         console.error(err)
     }
 
+    const plainPassword = "asdfasdf"
+    let hashedPassword: string
+    try {
+        hashedPassword = await hash(plainPassword, 10)
+        console.log("done hashing password")
+    } catch (err) {
+        console.log("error hashing password")
+        console.error(err)
+        return
+    }
+
     const userOne = new UserModel({
         username: "a@a.com",
-        password: "asdfasdf",
+        password: hashedPassword,
     })
 
     try {
@@ -39,7 +51,7 @@ export async function initialData() {
 
     const userTwo = new UserModel({
         username: "b@b.com",
-        password: "asdfasdf",
+        password: hashedPassword,
     })
 
     try {

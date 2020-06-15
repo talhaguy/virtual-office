@@ -1,6 +1,7 @@
 import { IVerifyOptions } from "passport-local"
 import { User } from "../models"
 import { Document, Model } from "mongoose"
+import { compare } from "bcrypt"
 import { validateEmail, validatePassword } from "../../shared-src/validation"
 
 interface VerifyFunctionWithDeps {
@@ -20,11 +21,16 @@ export const verifyFunction: VerifyFunctionWithDeps = (
 ) => {
     const isValidEmail = validateEmail(username)
     const isValidPassword = validatePassword(password)
+    let user: User & Document
 
     if (isValidEmail && isValidPassword) {
         UserModel.findOne({ username })
-            .then((user) => {
-                if (user.password === password) {
+            .then((userFromDb) => {
+                user = userFromDb
+                return compare(password, userFromDb.password)
+            })
+            .then((result) => {
+                if (result) {
                     done(null, user)
                 } else {
                     done(null, false, {
