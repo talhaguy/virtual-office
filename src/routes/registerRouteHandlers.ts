@@ -1,28 +1,27 @@
 import { Request, Response } from "express"
 import { CreateUser } from "../databaseModels"
 
-export function onUserSaveSuccess(res: Response) {
+export function onUserSaveSuccess(req: Request, res: Response) {
+    req.flash("info", "Thank you for registering. Please login.")
     res.redirect("/login")
 }
 
-export function onUserSaveError(res: Response, err: any) {
+export function onUserSaveError(req: Request, res: Response, err: any) {
     if (err.code === 11000) {
-        res.status(400).send({
-            status: "ERROR",
-            message: "Duplicate user",
-        })
+        req.flash("error", "Duplicate user")
+        res.redirect("/register")
+        return
     } else {
-        res.status(500).send({
-            status: "ERROR",
-            message: "Server error",
-        })
+        req.flash("error", "Server error")
+        res.redirect("/register")
+        return
     }
 }
 
 export function registerHandler(
     createUser: CreateUser,
-    onUserSaveSuccess: (res: Response) => void,
-    onUserSaveError: (res: Response, err: any) => void,
+    onUserSaveSuccess: (req: Request, res: Response) => void,
+    onUserSaveError: (req: Request, res: Response, err: any) => void,
     req: Request,
     res: Response
 ) {
@@ -32,9 +31,9 @@ export function registerHandler(
     })
     user.save()
         .then(() => {
-            onUserSaveSuccess(res)
+            onUserSaveSuccess(req, res)
         })
         .catch((err: any) => {
-            onUserSaveError(res, err)
+            onUserSaveError(req, res, err)
         })
 }

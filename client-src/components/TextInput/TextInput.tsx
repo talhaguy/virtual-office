@@ -9,6 +9,7 @@ interface TextInputProps {
     isValid?: boolean
     errorMessage?: string
     validation?: (value: string) => void
+    onFocusHandler?: (event: React.FocusEvent<HTMLInputElement>) => void
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -19,6 +20,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     isValid = true,
     errorMessage = "",
     validation = () => {},
+    onFocusHandler = () => {},
 }) => {
     const [hasValue, setHasValue] = useState(false)
     const id = `textInput-${name}`
@@ -28,8 +30,10 @@ export const TextInput: React.FC<TextInputProps> = ({
     }
 
     const onBlurHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("blur")
         const inputValue = event.currentTarget.value
         if (inputValue !== "") {
+            console.log("validating...")
             validation(event.currentTarget.value)
         }
     }
@@ -43,6 +47,7 @@ export const TextInput: React.FC<TextInputProps> = ({
                 className={styles.input}
                 onChange={onChangeHandler}
                 onBlur={onBlurHandler}
+                onFocus={onFocusHandler}
                 id={id}
             ></input>
             {label ? (

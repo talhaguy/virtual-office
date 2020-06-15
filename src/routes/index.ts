@@ -10,8 +10,8 @@ import {
 
 export const registerHandler = ((
     createUser: CreateUser,
-    onUserSaveSuccess: (res: Response) => void,
-    onUserSaveError: (res: Response, err: any) => void
+    onUserSaveSuccess: (req: Request, res: Response) => void,
+    onUserSaveError: (req: Request, res: Response, err: any) => void
 ) => (req: Request, res: Response) =>
     _registerHandler(createUser, onUserSaveSuccess, onUserSaveError, req, res))(
     createUser,

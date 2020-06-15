@@ -5,10 +5,10 @@
     height: 100vh;
 }
 
-.loginContainer {
+.innerContainer {
     width: 340px;
 }
 
-.warningMessageContainer {
+.messageContainer {
     margin-top: 15px;
 }
