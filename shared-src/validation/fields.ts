@@ -7,7 +7,6 @@ export interface ValidateEmailFunction {
 export const validateEmail: ValidateEmailFunction = (email: string) => {
     const emailRegex = new RegExp(RegexPatterns.Email, "i")
     const isEmailValid = emailRegex.test(email)
-    // setIsEmailValid(isEmailValid)
     return isEmailValid
 }
 
@@ -18,7 +17,6 @@ export interface ValidatePasswordFunction {
 export const validatePassword: ValidatePasswordFunction = (
     password: string
 ) => {
-    const isPasswordValid = password !== ""
-    // setIsPasswordValid(isPasswordValid)
+    const isPasswordValid = password !== "" && password.length >= 6
     return isPasswordValid
 }
