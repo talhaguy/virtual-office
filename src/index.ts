@@ -25,7 +25,7 @@ import {
     notFoundPageHandler,
     clientDataHandler,
 } from "./routes"
-import { registrationValidation } from "./middleware"
+import { registrationValidation, encryptPassword } from "./middleware"
 import { initialize } from "./socket"
 
 // MARK: Database start
@@ -64,7 +64,7 @@ app.get("/register", indexPageHandler)
 app.get("/login", indexPageHandler)
 app.get("/main", ensureLoggedIn({ redirectTo: "/login" }), indexPageHandler)
 
-app.post("/register", registrationValidation, registerHandler)
+app.post("/register", registrationValidation, encryptPassword, registerHandler)
 app.post(
     "/login",
     passport.authenticate("local", {

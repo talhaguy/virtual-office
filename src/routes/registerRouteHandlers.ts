@@ -25,6 +25,8 @@ export function registerHandler(
     req: Request,
     res: Response
 ) {
+    console.log("in register handler...", req.body.username, req.body.password)
+
     const user = createUser({
         username: req.body.username,
         password: req.body.password,
