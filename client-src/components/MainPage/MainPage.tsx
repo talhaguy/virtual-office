@@ -42,22 +42,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         if (isLoggedIn && firstRenderRef.current) {
             socketRef.current = io()
 
-            fetch("/data/getClientData", {
-                method: "post",
-            })
-                .then<ServerResponse<ClientData>>((response) => response.json())
-                .then((response) => {
-                    if (response.status === RepsonseStatusText.Success) {
-                        setCurrentUser(response.data?.currentUser)
-                        setOnlineUsers(response.data?.onlineUsers)
-                        setRooms(response.data?.rooms)
-                    }
-                })
-                .catch((err) => {
-                    console.error("Error getting client data")
-                    console.error(err)
-                })
-
             firstRenderRef.current = false
         }
 

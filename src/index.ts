@@ -23,7 +23,6 @@ import {
     logoutHandler,
     isLoggedInHandler,
     notFoundPageHandler,
-    clientDataHandler,
 } from "./routes"
 import { registrationValidation, encryptPassword } from "./middleware"
 import { initialize } from "./socket"
@@ -75,7 +74,6 @@ app.post(
 )
 app.post("/logout", logoutHandler)
 app.post("/isLoggedIn", isLoggedInHandler)
-app.post("/data/getClientData", clientDataHandler)
 
 app.use(express.static("public"))
 
