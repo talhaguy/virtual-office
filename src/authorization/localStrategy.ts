@@ -113,7 +113,7 @@ export const serializeUser: SerializeUser = (user, done) => {
 
 // MARK: deserializeUser()
 
-interface PassportDeserializeUserFunctionDoneParameterFunction {
+export interface PassportDeserializeUserFunctionDoneParameterFunction {
     (err: any, user?: User): void
 }
 

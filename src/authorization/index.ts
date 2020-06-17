@@ -1,23 +1,37 @@
+import { VerifyFunction } from "passport-local"
+import { compare } from "bcrypt"
 import {
     verifyFunction as _verifyFunction,
     deserializeUser as _deserializeUser,
+    verifyFunctionNoUserFound,
+    verifyFunctionUserFound,
+    PassportDeserializeUserFunctionDoneParameterFunction,
 } from "./localStrategy"
 import { UserModel } from "../databaseModels"
-import { User } from "../models"
-import { VerifyFunction } from "passport-local"
 
 export const verifyFunction = ((UserModel) => {
     const verifyFunction: VerifyFunction = (username, password, done) =>
-        _verifyFunction(UserModel, username, password, done)
+        _verifyFunction(
+            UserModel,
+            compare,
+            verifyFunctionNoUserFound,
+            verifyFunctionUserFound,
+            username,
+            password,
+            done
+        )
     return verifyFunction
 })(UserModel)
 
-interface DeserializeUser {
-    (id: string, done: (err: any, user?: User) => void): void
+export interface DeserializeUserFunction {
+    (
+        id: string,
+        done: PassportDeserializeUserFunctionDoneParameterFunction
+    ): void
 }
 
 export const deserializeUser = ((UserModel) => {
-    const deserializeUser: DeserializeUser = (id, done) =>
+    const deserializeUser: DeserializeUserFunction = (id, done) =>
         _deserializeUser(UserModel, id, done)
     return deserializeUser
 })(UserModel)
