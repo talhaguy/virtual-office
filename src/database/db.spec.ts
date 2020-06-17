@@ -1,93 +1,45 @@
-import { connect, connectionErrorCb, connectionOpenCb } from "./db"
-import { Mongoose, Connection } from "mongoose"
-import { mock, resetCalls, instance, verify, deepEqual } from "ts-mockito"
+import mongoose from "mongoose"
+import { connect } from "./db"
+
+jest.mock("mongoose", () => ({
+    connect: jest.fn(),
+    connection: {
+        on: jest.fn(),
+        once: jest.fn(),
+    },
+}))
 
 describe("db", () => {
+    beforeEach(() => {
+        jest.clearAllMocks()
+    })
+
     describe("connect()", () => {
-        const mongooseMock = mock<Mongoose>()
-        const mongooseInstance = instance(mongooseMock)
-
-        const connectionMock = mock<Connection>()
-        const connectionInstance = instance(connectionMock)
-
-        const dbPath = "path/to/db"
-        const connectionErrorCb = jest.fn()
-        const connectionOpenCb = jest.fn()
+        const dbPath = "/path/to/db"
+        const options = {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        }
 
         beforeEach(() => {
-            resetCalls(mongooseMock)
-            resetCalls(connectionMock)
-            mongooseInstance.connection = connectionInstance
-            connectionErrorCb.mockClear()
-            connectionOpenCb.mockClear()
+            jest.clearAllMocks()
         })
 
-        it("should connect to mongodb through mongoose", () => {
-            connect(
-                mongooseInstance,
-                dbPath,
-                connectionErrorCb,
+        fit("should connect to db using mongoose and set error and open callbacks", () => {
+            const connectionErrorCb = jest.fn()
+            const connectionOpenCb = jest.fn()
+
+            connect(mongoose, dbPath, connectionErrorCb, connectionOpenCb)
+
+            expect(mongoose.connect).toBeCalledWith(dbPath, options)
+            expect(mongoose.connection.on).toBeCalledWith(
+                "error",
+                connectionErrorCb
+            )
+            expect(mongoose.connection.once).toBeCalledWith(
+                "open",
                 connectionOpenCb
             )
-            verify(
-                mongooseMock.connect(
-                    dbPath,
-                    deepEqual({
-                        useNewUrlParser: true,
-                        useUnifiedTopology: true,
-                    })
-                )
-            ).once()
-        })
-
-        it("should run the error callback if there is a connection error", () => {
-            const dbPath = "path/to/db"
-            connect(
-                mongooseInstance,
-                dbPath,
-                connectionErrorCb,
-                connectionOpenCb
-            )
-            verify(connectionMock.on("error", connectionErrorCb)).once()
-        })
-
-        it("should run the open callback if the connection opens", () => {
-            const dbPath = "path/to/db"
-            connect(
-                mongooseInstance,
-                dbPath,
-                connectionErrorCb,
-                connectionOpenCb
-            )
-            verify(connectionMock.once("open", connectionOpenCb)).once()
-        })
-    })
-
-    describe("connectionErrorCb()", () => {
-        const consoleMock = mock<Console>()
-        const consoleInstance = instance(consoleMock)
-
-        beforeEach(() => {
-            resetCalls(consoleMock)
-        })
-
-        it("should log an error to the console", () => {
-            connectionErrorCb(consoleInstance, "some error")
-            verify(consoleMock.error("Connection error: ", "some error")).once()
-        })
-    })
-
-    describe("connectionOpenCb()", () => {
-        const consoleMock = mock<Console>()
-        const consoleInstance = instance(consoleMock)
-
-        beforeEach(() => {
-            resetCalls(consoleMock)
-        })
-
-        it("should log a message to the console", () => {
-            connectionOpenCb(consoleInstance)
-            verify(consoleMock.log("Connected to DB")).once()
         })
     })
 })

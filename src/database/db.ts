@@ -1,5 +1,7 @@
 import mongoose, { Mongoose } from "mongoose"
 
+// MARK: connect()
+
 export interface Connect {
     (
         mongoose: Mongoose,
@@ -26,6 +28,8 @@ export const connect: Connect = (
     db.once("open", connectionOpenCb)
 }
 
+// MARK: connectionErrorCb()
+
 export interface ConnectionErrorCb {
     (console: Console, err: any): void
 }
@@ -36,6 +40,8 @@ export const connectionErrorCb: ConnectionErrorCb = (
 ) => {
     console.error("Connection error: ", err)
 }
+
+// MARK: connectionOpenCb()
 
 export interface ConnectionOpenCb {
     (console: Console): void
