@@ -2,6 +2,9 @@ import { IVerifyOptions } from "passport-local"
 import { User } from "../models"
 import { Document, Model } from "mongoose"
 import { validateEmail, validatePassword } from "../../shared-src/validation"
+import { ErrorMessages } from "./constants"
+
+// MARK: verifyFunction()
 
 interface PassportVerifyFunctionDoneParameterFunction {
     (error: any, user?: any, options?: IVerifyOptions): void
@@ -23,11 +26,6 @@ interface VerifyFunctionWithDeps {
     ): void
 }
 
-export enum ErrorMessages {
-    WrongUsernameOrPassword = "Username or password is not correct",
-    InvalidPatternUsernameOrPassword = "Username or password is not correct format",
-}
-
 export const verifyFunction: VerifyFunctionWithDeps = (
     UserModel,
     hashCompare,
@@ -45,8 +43,8 @@ export const verifyFunction: VerifyFunctionWithDeps = (
                 user = userFromDb
                 return hashCompare(password, userFromDb.password)
             })
-            .then((result) => {
-                verifyFunctionUserFound(result, done, user)
+            .then((doesHashedPasswordMatch) => {
+                verifyFunctionUserFound(doesHashedPasswordMatch, done, user)
             })
             .catch(() => {
                 verifyFunctionNoUserFound(done)
@@ -57,6 +55,8 @@ export const verifyFunction: VerifyFunctionWithDeps = (
         })
     }
 }
+
+// MARK: verifyFunctionNoUserFound()
 
 interface VerifyFunctionNoUserFoundFunction {
     (done: PassportVerifyFunctionDoneParameterFunction): void
@@ -70,20 +70,22 @@ export const verifyFunctionNoUserFound: VerifyFunctionNoUserFoundFunction = (
     })
 }
 
+// MARK: verifyFunctionUserFound()
+
 interface VerifyFunctionUserFoundFunction {
     (
-        result: boolean,
+        doesHashedPasswordMatch: boolean,
         done: PassportVerifyFunctionDoneParameterFunction,
         user: User & Document
     ): void
 }
 
 export const verifyFunctionUserFound: VerifyFunctionUserFoundFunction = (
-    result,
+    doesHashedPasswordMatch,
     done,
     user
 ) => {
-    if (result) {
+    if (doesHashedPasswordMatch) {
         done(null, user)
     } else {
         done(null, false, {
@@ -92,28 +94,47 @@ export const verifyFunctionUserFound: VerifyFunctionUserFoundFunction = (
     }
 }
 
-interface SerializeUser {
-    (user: User & Document, done: (err: any, id?: string) => void): void
+// MARK: serializeUser()
+
+interface PassportSerializeUserFunctionDoneParameterFunction {
+    (err: any, id?: string): void
 }
 
-export const serializeUser: SerializeUser = (user, cb) => {
-    cb(null, user._id)
+interface SerializeUser {
+    (
+        user: User & Document,
+        done: PassportSerializeUserFunctionDoneParameterFunction
+    ): void
+}
+
+export const serializeUser: SerializeUser = (user, done) => {
+    done(null, user._id)
+}
+
+// MARK: deserializeUser()
+
+interface PassportDeserializeUserFunctionDoneParameterFunction {
+    (err: any, user?: User): void
 }
 
 interface DeserializeUserWithDeps {
     (
         UserModel: Model<User & Document, {}>,
         id: string,
-        done: (err: any, user?: User) => void
+        done: PassportDeserializeUserFunctionDoneParameterFunction
     ): void
 }
 
-export const deserializeUser: DeserializeUserWithDeps = (UserModel, id, cb) => {
+export const deserializeUser: DeserializeUserWithDeps = (
+    UserModel,
+    id,
+    done
+) => {
     UserModel.findById(id)
         .then((user) => {
-            cb(null, user)
+            done(null, user)
         })
         .catch(() => {
-            cb(new Error("Deserialization failed"))
+            done(new Error("Deserialization failed"))
         })
 }
