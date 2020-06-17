@@ -1,191 +1,107 @@
-import { mock, instance, verify, resetCalls, when, deepEqual } from "ts-mockito"
-import { User } from "../models"
-import { Model, Document } from "mongoose"
-import { IVerifyOptions } from "passport-local"
-import { verifyFunction, serializeUser, deserializeUser } from "./localStrategy"
+import { verifyFunction, ErrorMessages } from "./localStrategy"
+import { compare } from "bcrypt"
+import { UserModel } from "../databaseModels"
+
+jest.mock("bcrypt")
+jest.mock("../databaseModels")
 
 describe("localStrategy", () => {
-    const userModelMock = mock<Model<User & Document, {}>>()
-    const userModel = instance(userModelMock)
-
-    beforeEach(() => {
-        resetCalls(userModelMock)
-    })
-
-    describe("verifyFunction()", () => {
-        interface DoneMocks {
-            done: (error: any, user?: any, options?: IVerifyOptions) => void
-        }
-        const doneMocks = mock<DoneMocks>()
-        const doneMocksInstance = instance(doneMocks)
+    describe("verifyFunction", () => {
+        const username = "username@site.com"
+        const password = "plain-text-pwd"
+        const doneFunc = jest.fn()
+        const verifyFunctionNoUserFound = jest.fn()
+        const verifyFunctionUserFound = jest.fn()
 
         beforeEach(() => {
-            resetCalls(doneMocks)
+            doneFunc.mockClear()
+            verifyFunctionNoUserFound.mockClear()
+            verifyFunctionUserFound.mockClear()
         })
 
-        it("should call a done callback with an error if user is not found", (done) => {
-            const username = "some-user-that-doesnt-exist@site.com"
+        it("should call done with invalid pattern message if username or password validation fails", () => {
+            const wrongUserName = "username"
+            const wrongPassword = "1234"
+            UserModel.findOne = jest.fn()
 
-            when(userModelMock.findOne(deepEqual({ username }))).thenReject()
-            when(
-                doneMocks.done(
-                    null,
-                    false,
-                    deepEqual({
-                        message: "User not found",
-                    })
-                )
-            ).thenCall(() => {
-                verify(
-                    doneMocks.done(
-                        null,
-                        false,
-                        deepEqual({
-                            message: "User not found",
-                        })
-                    )
-                ).calledAfter(userModelMock.findOne(deepEqual({ username })))
-                done()
+            // wrong username
+            verifyFunction(
+                UserModel,
+                compare,
+                verifyFunctionNoUserFound,
+                verifyFunctionUserFound,
+                wrongUserName,
+                password,
+                doneFunc
+            )
+
+            expect(doneFunc).toBeCalledWith(null, false, {
+                message: ErrorMessages.InvalidPatternUsernameOrPassword,
             })
 
+            // wrong password
+            doneFunc.mockClear()
             verifyFunction(
-                userModel,
+                UserModel,
+                compare,
+                verifyFunctionNoUserFound,
+                verifyFunctionUserFound,
                 username,
-                "asdfasdf",
-                doneMocksInstance.done
+                wrongPassword,
+                doneFunc
             )
+
+            expect(doneFunc).toBeCalledWith(null, false, {
+                message: ErrorMessages.InvalidPatternUsernameOrPassword,
+            })
         })
 
-        it("should call a done callback with an error if user is found but password does not match", (done) => {
-            const username = "found-user@site.com"
-            const password = "wrong-password"
-            const foundUser = {
-                username: "found-user@site.com",
-                password: "real-password",
-            }
-
-            when(userModelMock.findOne(deepEqual({ username }))).thenResolve(
-                foundUser as any // resolving a mockito mock instance doesn't work here so resorting to `any`
-            )
-            when(
-                doneMocks.done(
-                    null,
-                    false,
-                    deepEqual({
-                        message: "Wong password",
-                    })
-                )
-            ).thenCall(() => {
-                verify(
-                    doneMocks.done(
-                        null,
-                        false,
-                        deepEqual({
-                            message: "Wong password",
-                        })
-                    )
-                ).calledAfter(userModelMock.findOne(deepEqual({ username })))
-                done()
-            })
+        it("should call verifyFunctionNoUserFound if user is NOT found", (done) => {
+            const verifyFunctionNoUserFound = jest
+                .fn()
+                .mockImplementation(() => {
+                    expect(verifyFunctionNoUserFound).toBeCalledWith(doneFunc)
+                    done()
+                })
+            UserModel.findOne = jest.fn().mockRejectedValue({})
 
             verifyFunction(
-                userModel,
+                UserModel,
+                compare,
+                verifyFunctionNoUserFound,
+                verifyFunctionUserFound,
                 username,
                 password,
-                doneMocksInstance.done
+                doneFunc
             )
         })
 
-        it("should call a done callback with a user if user is found and password matches", (done) => {
-            const username = "found-user@site.com"
-            const password = "real-password"
-            const foundUser = {
-                username: "found-user@site.com",
-                password: "real-password",
+        it("should check password hash and then call verifyFunctionUserFound if user is found", (done) => {
+            const doesPasswordMatch = true
+            const compare = jest.fn().mockResolvedValue(doesPasswordMatch)
+            const user = {
+                password: "pwd-from-db",
             }
-
-            when(userModelMock.findOne(deepEqual({ username }))).thenResolve(
-                foundUser as any // resolving a mockito mock instance doesn't work here so resorting to `any`
-            )
-            when(doneMocks.done(null, foundUser)).thenCall(() => {
-                verify(doneMocks.done(null, foundUser)).calledAfter(
-                    userModelMock.findOne(deepEqual({ username }))
+            const verifyFunctionUserFound = jest.fn().mockImplementation(() => {
+                expect(compare).toBeCalledWith(password, user.password)
+                expect(verifyFunctionUserFound).toBeCalledWith(
+                    doesPasswordMatch,
+                    doneFunc,
+                    user
                 )
                 done()
             })
+            UserModel.findOne = jest.fn().mockResolvedValueOnce(user)
 
             verifyFunction(
-                userModel,
+                UserModel,
+                compare,
+                verifyFunctionNoUserFound,
+                verifyFunctionUserFound,
                 username,
                 password,
-                doneMocksInstance.done
+                doneFunc
             )
-        })
-    })
-
-    describe("serializeUser()", () => {
-        const userDocumentMock = mock<User & Document>()
-        const userDocumentInstance = instance(userDocumentMock)
-
-        interface CbMocks {
-            cb: (err: any, id?: string) => void
-        }
-        const cbMocks = mock<CbMocks>()
-        const cbMocksInstance = instance(cbMocks)
-
-        beforeEach(() => {
-            resetCalls(userDocumentMock)
-            userDocumentInstance._id = "123456"
-            resetCalls(cbMocks)
-        })
-
-        it("should run a back with the user id", () => {
-            serializeUser(userDocumentInstance, cbMocksInstance.cb)
-            verify(cbMocks.cb(null, userDocumentInstance._id))
-        })
-    })
-
-    describe("deserializeUser()", () => {
-        interface CbMocks {
-            cb: (err: any, user?: User) => void
-        }
-        const cbMocks = mock<CbMocks>()
-        const cbMocksInstance = instance(cbMocks)
-
-        beforeEach(() => {
-            resetCalls(cbMocks)
-        })
-
-        it("should return an error to a callback if user cannot be found by id", (done) => {
-            when(userModelMock.findById("123456")).thenReject()
-            when(
-                cbMocks.cb(deepEqual(new Error("Deserialization failed")))
-            ).thenCall(() => {
-                verify(
-                    cbMocks.cb(deepEqual(new Error("Deserialization failed")))
-                ).calledAfter(userModelMock.findById("123456"))
-                done()
-            })
-
-            deserializeUser(userModel, "123456", cbMocksInstance.cb)
-        })
-
-        it("should return a user to a callback if user is found by id", (done) => {
-            const foundUser = {
-                _id: "123456",
-                username: "found-user@site.com",
-                password: "real-password",
-            }
-
-            when(userModelMock.findById("123456")).thenResolve(foundUser as any)
-            when(cbMocks.cb(null, deepEqual(foundUser))).thenCall(() => {
-                verify(cbMocks.cb(null, deepEqual(foundUser))).calledAfter(
-                    userModelMock.findById("123456")
-                )
-                done()
-            })
-
-            deserializeUser(userModel, "123456", cbMocksInstance.cb)
         })
     })
 })

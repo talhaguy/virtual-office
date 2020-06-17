@@ -1,51 +1,93 @@
 import { IVerifyOptions } from "passport-local"
 import { User } from "../models"
 import { Document, Model } from "mongoose"
-import { compare } from "bcrypt"
 import { validateEmail, validatePassword } from "../../shared-src/validation"
+
+interface PassportVerifyFunctionDoneParameterFunction {
+    (error: any, user?: any, options?: IVerifyOptions): void
+}
 
 interface VerifyFunctionWithDeps {
     (
         UserModel: Model<User & Document, {}>,
+        hashCompare: (
+            data: any,
+            encrypted: string,
+            callback?: (err: Error, same: boolean) => void
+        ) => Promise<boolean>,
+        verifyFunctionNoUserFound: VerifyFunctionNoUserFoundFunction,
+        verifyFunctionUserFound: VerifyFunctionUserFoundFunction,
         username: string,
         password: string,
-        done: (error: any, user?: any, options?: IVerifyOptions) => void
+        done: PassportVerifyFunctionDoneParameterFunction
     ): void
+}
+
+export enum ErrorMessages {
+    WrongUsernameOrPassword = "Username or password is not correct",
+    InvalidPatternUsernameOrPassword = "Username or password is not correct format",
 }
 
 export const verifyFunction: VerifyFunctionWithDeps = (
     UserModel,
+    hashCompare,
+    verifyFunctionNoUserFound,
+    verifyFunctionUserFound,
     username,
     password,
     done
 ) => {
-    const isValidEmail = validateEmail(username)
-    const isValidPassword = validatePassword(password)
     let user: User & Document
 
-    if (isValidEmail && isValidPassword) {
+    if (validateEmail(username) && validatePassword(password)) {
         UserModel.findOne({ username })
             .then((userFromDb) => {
                 user = userFromDb
-                return compare(password, userFromDb.password)
+                return hashCompare(password, userFromDb.password)
             })
             .then((result) => {
-                if (result) {
-                    done(null, user)
-                } else {
-                    done(null, false, {
-                        message: "Username or password is not correct",
-                    })
-                }
+                verifyFunctionUserFound(result, done, user)
             })
             .catch(() => {
-                done(null, false, {
-                    message: "Username or password is not correct",
-                })
+                verifyFunctionNoUserFound(done)
             })
     } else {
         done(null, false, {
-            message: "Username or password is not correct format",
+            message: ErrorMessages.InvalidPatternUsernameOrPassword,
+        })
+    }
+}
+
+interface VerifyFunctionNoUserFoundFunction {
+    (done: PassportVerifyFunctionDoneParameterFunction): void
+}
+
+export const verifyFunctionNoUserFound: VerifyFunctionNoUserFoundFunction = (
+    done: PassportVerifyFunctionDoneParameterFunction
+) => {
+    done(null, false, {
+        message: ErrorMessages.WrongUsernameOrPassword,
+    })
+}
+
+interface VerifyFunctionUserFoundFunction {
+    (
+        result: boolean,
+        done: PassportVerifyFunctionDoneParameterFunction,
+        user: User & Document
+    ): void
+}
+
+export const verifyFunctionUserFound: VerifyFunctionUserFoundFunction = (
+    result,
+    done,
+    user
+) => {
+    if (result) {
+        done(null, user)
+    } else {
+        done(null, false, {
+            message: ErrorMessages.WrongUsernameOrPassword,
         })
     }
 }
