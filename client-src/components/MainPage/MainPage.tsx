@@ -135,15 +135,19 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                         }
                                         title={room.name}
                                         titleButton={
-                                            <Button
-                                                size={ButtonSize.Normal}
-                                                label={"Join"}
-                                                onClickHandler={() =>
-                                                    onRoomJoinButtonClick(
-                                                        room.id
-                                                    )
-                                                }
-                                            />
+                                            currentUser.roomId === room.id ? (
+                                                ""
+                                            ) : (
+                                                <Button
+                                                    size={ButtonSize.Normal}
+                                                    label={"Join"}
+                                                    onClickHandler={() =>
+                                                        onRoomJoinButtonClick(
+                                                            room.id
+                                                        )
+                                                    }
+                                                />
+                                            )
                                         }
                                         titlePosition={
                                             room.titlePosition ===
