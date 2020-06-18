@@ -1,133 +1,129 @@
 import { Request, Response } from "express"
-import { Document } from "mongoose"
-import { mock, instance, resetCalls, verify, when, deepEqual } from "ts-mockito"
 import {
     onUserSaveSuccess,
     onUserSaveError,
     registerHandler,
 } from "./registerRouteHandlers"
-import { UserModel } from "../databaseModels"
-import { User } from "../models"
 
 describe("registerRouteHandlers", () => {
-    const reqMock = mock<Request>()
-    const req = instance(reqMock)
-    req.body = {
-        username: "obiwan@jedi.com",
-        password: "123456789",
-    }
+    const req = ({
+        logout: jest.fn(),
+        flash: jest.fn(),
+        body: {
+            username: "user@site.com",
+            password: "my-password",
+        },
+    } as unknown) as Request
 
-    const resMock = mock<Response>()
-    const res = instance(resMock)
-
-    const userModelMock = mock<User & Document>(UserModel)
-    const userModelInstance = instance(userModelMock)
+    const res = ({
+        json: jest.fn(),
+        redirect: jest.fn(),
+    } as unknown) as Response
 
     beforeEach(() => {
-        resetCalls(reqMock)
-        resetCalls(resMock)
-        resetCalls(userModelMock)
+        jest.clearAllMocks()
     })
 
     describe("onUserSaveSuccess()", () => {
-        it("should redirect to login page", () => {
-            onUserSaveSuccess(res)
-            verify(resMock.redirect("/login")).once()
+        beforeEach(() => {
+            jest.clearAllMocks()
+        })
+
+        it("should redirect to login page with flash message", () => {
+            onUserSaveSuccess(req, res)
+            expect(req.flash).toBeCalledWith(
+                "info",
+                "Thank you for registering. Please login."
+            )
+            expect(res.redirect).toBeCalledWith("/login")
         })
     })
 
     describe("onUserSaveError()", () => {
-        it("should return a 400 status and send an error response on duplicate user error", () => {
-            when(resMock.status(400)).thenReturn(res)
-
-            const err = { code: 11000 }
-            onUserSaveError(res, err)
-            verify(resMock.status(400)).once()
-            verify(
-                resMock.send(
-                    deepEqual({
-                        status: "ERROR",
-                        message: "Duplicate user",
-                    })
-                )
-            ).once()
+        beforeEach(() => {
+            jest.clearAllMocks()
         })
 
-        it("should return a 500 status and send an error response on any other error", () => {
-            when(resMock.status(500)).thenReturn(res)
+        it("should add a specific flash message and redirect to register page on duplicate user error (error code 11000)", () => {
+            const error = {
+                code: 11000,
+            }
 
-            const err = { code: 12345 }
-            onUserSaveError(res, err)
-            verify(resMock.status(500)).once()
-            verify(
-                resMock.send(
-                    deepEqual({
-                        status: "ERROR",
-                        message: "Server error",
-                    })
-                )
-            ).once()
+            onUserSaveError(req, res, error)
+
+            expect(req.flash).toBeCalledWith("error", "Duplicate user")
+            expect(res.redirect).toBeCalledWith("/register")
+        })
+
+        it("should add flash message and redirect to register page on general errors", () => {
+            const error = {
+                code: 12345,
+            }
+
+            onUserSaveError(req, res, error)
+
+            expect(req.flash).toBeCalledWith("error", "Server error")
+            expect(res.redirect).toBeCalledWith("/register")
         })
     })
 
     describe("registerHandler()", () => {
-        const createUser = jest.fn().mockImplementation(() => userModelInstance)
-
-        interface UserCbMocks {
-            onUserSaveSuccess: (res: Response) => void
-            onUserSaveError: (res: Response, err: any) => void
-        }
-        const userCbMocks = mock<UserCbMocks>()
-        const userCbMocksInstance = instance(userCbMocks)
+        const error = new Error("Save error")
+        const onUserSaveSuccess = jest.fn()
+        const onUserSaveError = jest.fn()
 
         beforeEach(() => {
-            createUser.mockClear()
-            resetCalls(userCbMocks)
-        })
-
-        it("should create a new user model, save it, then on success run the onUserSaveSuccess function", (done) => {
-            when(userModelMock.save()).thenResolve()
-            when(userCbMocks.onUserSaveSuccess(res)).thenCall(() => {
-                verify(userCbMocks.onUserSaveSuccess(res)).calledAfter(
-                    userModelMock.save()
-                )
-                done()
-            })
-
-            registerHandler(
-                createUser,
-                userCbMocksInstance.onUserSaveSuccess,
-                userCbMocksInstance.onUserSaveError,
-                req,
-                res
-            )
-
-            expect(createUser).toHaveBeenCalledWith({
-                username: "obiwan@jedi.com",
-                password: "123456789",
-            })
-            verify(userModelMock.save()).once()
+            jest.clearAllMocks()
         })
 
         it("should run the onUserSaveError function on user model save error", (done) => {
-            const error = { code: 11000 }
-            when(userModelMock.save()).thenReturn(Promise.reject(error))
-            when(userCbMocks.onUserSaveError(res, error)).thenCall(() => {
-                verify(userCbMocks.onUserSaveError(res, error)).calledAfter(
-                    userModelMock.save()
-                )
+            const save = jest.fn().mockRejectedValue(error)
+            const createUser = jest.fn().mockImplementation(() => ({
+                save,
+            }))
+            const onUserSaveError = jest.fn().mockImplementation(() => {
+                expect(onUserSaveError).toBeCalledWith(req, res, error)
                 done()
             })
 
             registerHandler(
                 createUser,
-                userCbMocksInstance.onUserSaveSuccess,
-                userCbMocksInstance.onUserSaveError,
+                onUserSaveSuccess,
+                onUserSaveError,
                 req,
                 res
             )
 
-            verify(userModelMock.save()).once()
+            expect(createUser).toBeCalledWith({
+                username: req.body.username,
+                password: req.body.password,
+            })
+            expect(save).toBeCalled()
+        })
+
+        it("should create a new user model, save it, then on success run the onUserSaveSuccess function", (done) => {
+            const save = jest.fn().mockResolvedValue({})
+            const createUser = jest.fn().mockImplementation(() => ({
+                save,
+            }))
+            const onUserSaveSuccess = jest.fn().mockImplementation(() => {
+                expect(onUserSaveSuccess).toBeCalledWith(req, res)
+                done()
+            })
+
+            registerHandler(
+                createUser,
+                onUserSaveSuccess,
+                onUserSaveError,
+                req,
+                res
+            )
+
+            expect(createUser).toBeCalledWith({
+                username: req.body.username,
+                password: req.body.password,
+            })
+            expect(save).toBeCalled()
         })
     })
 })

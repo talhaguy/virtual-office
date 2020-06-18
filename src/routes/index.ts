@@ -4,14 +4,16 @@ import { Request, Response } from "express"
 import { CreateUser, createUser } from "../databaseModels"
 import {
     registerHandler as _registerHandler,
+    OnUserSaveSuccessFunction,
     onUserSaveSuccess,
+    OnUserSaveErrorFunction,
     onUserSaveError,
 } from "./registerRouteHandlers"
 
 export const registerHandler = ((
     createUser: CreateUser,
-    onUserSaveSuccess: (req: Request, res: Response) => void,
-    onUserSaveError: (req: Request, res: Response, err: any) => void
+    onUserSaveSuccess: OnUserSaveSuccessFunction,
+    onUserSaveError: OnUserSaveErrorFunction
 ) => (req: Request, res: Response) =>
     _registerHandler(createUser, onUserSaveSuccess, onUserSaveError, req, res))(
     createUser,
