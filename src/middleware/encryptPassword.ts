@@ -1,27 +1,42 @@
 import { Request, Response, NextFunction } from "express"
-import { hash, compare } from "bcrypt"
 
-const myPlaintextPassword = "s0//P4$$w0rD"
-const someOtherPlaintextPassword = "not_bacon"
+// MARK: encryptPassword()
+
+export interface BcryptHashFunction {
+    (
+        data: any,
+        saltOrRounds: string | number,
+        callback?: (err: Error, encrypted: string) => void
+    ): Promise<string>
+}
 
 export function encryptPassword(
+    hashFunction: BcryptHashFunction,
+    encryptPasswordFailFunction: EncryptPasswordFailFunction,
     req: Request,
     res: Response,
     next: NextFunction
 ) {
     const password = req.body.password as string
-
-    console.log("in encryptPassword")
     const saltRounds = 10
 
-    hash(password, saltRounds)
+    hashFunction(password, saltRounds)
         .then((hashedPassword) => {
             req.body.password = hashedPassword
             next()
         })
-        .catch((err) => {
-            req.flash("error", "Something went wrong")
-            res.redirect("/register")
-            return
+        .catch(() => {
+            encryptPasswordFailFunction(req, res)
         })
+}
+
+// MARK: encryptPasswordFail()
+
+export interface EncryptPasswordFailFunction {
+    (req: Request, res: Response): void
+}
+
+export const encryptPasswordFail: EncryptPasswordFailFunction = (req, res) => {
+    req.flash("error", "Something went wrong")
+    res.redirect("/register")
 }
