@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { connect } from "./db"
+import { connect, connectionErrorCb, connectionOpenCb } from "./db"
 
 jest.mock("mongoose", () => ({
     connect: jest.fn(),
@@ -10,6 +10,13 @@ jest.mock("mongoose", () => ({
 }))
 
 describe("db", () => {
+    jest.spyOn(console, "log").mockImplementation(() => {
+        return
+    })
+    jest.spyOn(console, "error").mockImplementation(() => {
+        return
+    })
+
     beforeEach(() => {
         jest.clearAllMocks()
     })
@@ -25,7 +32,7 @@ describe("db", () => {
             jest.clearAllMocks()
         })
 
-        fit("should connect to db using mongoose and set error and open callbacks", () => {
+        it("should connect to db using mongoose and set error and open callbacks", () => {
             const connectionErrorCb = jest.fn()
             const connectionOpenCb = jest.fn()
 
@@ -40,6 +47,29 @@ describe("db", () => {
                 "open",
                 connectionOpenCb
             )
+        })
+    })
+
+    describe("connectionErrorCb()", () => {
+        beforeEach(() => {
+            jest.clearAllMocks()
+        })
+
+        it("should print an error to the console", () => {
+            const error = new Error("some error")
+            connectionErrorCb(console, error)
+            expect(console.error).toBeCalledWith("Connection error: ", error)
+        })
+    })
+
+    describe("connectionOpenCb()", () => {
+        beforeEach(() => {
+            jest.clearAllMocks()
+        })
+
+        it("should print an message to the console", () => {
+            connectionOpenCb(console)
+            expect(console.log).toBeCalledWith("Connected to DB")
         })
     })
 })
