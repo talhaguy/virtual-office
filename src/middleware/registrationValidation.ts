@@ -6,8 +6,6 @@ export function registrationValidation(
     res: Response,
     next: NextFunction
 ) {
-    console.log("in registrationValidation")
-
     const username = req.body.username as string
     const password = req.body.password as string
 
@@ -26,8 +24,6 @@ export function registrationValidation(
         res.redirect("/register")
         return
     }
-
-    // TODO: hash password
 
     next()
 }
