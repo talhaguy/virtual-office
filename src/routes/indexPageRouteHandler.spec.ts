@@ -22,6 +22,21 @@ describe("indexPageRouteHandler", () => {
             jest.clearAllMocks()
         })
 
+        it("should not add a username to the view data when `req.user` is not present", () => {
+            const req = ({
+                flash: jest.fn().mockImplementation(() => ({
+                    someKey: ["First message", "Second Message"],
+                })),
+            } as unknown) as Request
+
+            indexPageHandler(req, res)
+            expect(res.render).toBeCalledWith("index", {
+                flashMessages: {
+                    someKey: ["First message", "Second Message"],
+                },
+            })
+        })
+
         it("should render the index view file with the initial client data", () => {
             indexPageHandler(req, res)
             expect(res.render).toBeCalledWith("index", {

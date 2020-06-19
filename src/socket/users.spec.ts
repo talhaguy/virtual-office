@@ -300,6 +300,17 @@ describe("users", () => {
                     titlePosition: RoomTitlePosition.Top,
                     roomType: RoomType.MeetingRoom,
                 },
+                {
+                    id: "room4",
+                    name: "Room 4",
+                    gridColStart: 0,
+                    gridColEnd: 2,
+                    gridRowStart: 0,
+                    gridRowEnd: 2,
+                    doors: [],
+                    titlePosition: RoomTitlePosition.Top,
+                    roomType: RoomType.MeetingRoom,
+                },
             ])
             const expectedData: ClientData = {
                 currentUser: firstUser,
@@ -342,6 +353,18 @@ describe("users", () => {
                                 color: secondUser.color,
                             },
                         ],
+                    },
+                    {
+                        id: "room4",
+                        name: "Room 4",
+                        gridColStart: 0,
+                        gridColEnd: 2,
+                        gridRowStart: 0,
+                        gridRowEnd: 2,
+                        doors: [],
+                        titlePosition: RoomTitlePosition.Top,
+                        roomType: RoomType.MeetingRoom,
+                        users: [],
                     },
                 ],
             }
