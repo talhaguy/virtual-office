@@ -87,7 +87,7 @@ interface OnConnectionFactoryFunction {
     ): OnConnectionFunction
 }
 
-interface OnConnectionFunction {
+export interface OnConnectionFunction {
     (socket: Socket): void
 }
 
@@ -100,7 +100,6 @@ export const onConnectionFactory: OnConnectionFactoryFunction = (
     onUserJoinedRoom,
     onUserChat
 ) => (socket) => {
-    console.log("a user connected")
     if (!socket.request.session.passport) {
         return
     }

@@ -303,7 +303,7 @@ describe("users", () => {
             ])
             const expectedData: ClientData = {
                 currentUser: firstUser,
-                onlineUsers: [firstUser, secondUser],
+                onlineUsers: [firstUser, secondUser, thirdUser],
                 rooms: [
                     {
                         id: "room1",
