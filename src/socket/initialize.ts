@@ -8,7 +8,7 @@ import {
     constructClientData,
     updateUserRoom,
     getDataForUser,
-} from "./users"
+} from "./index"
 import {
     IOEventResponseData,
     IOEventChatMessageData,
