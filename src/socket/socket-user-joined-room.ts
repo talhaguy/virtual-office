@@ -106,8 +106,6 @@ export const onUserJoinedRoomFunctionFactory: OnUserJoinedRoomFactoryFunction = 
     userJoinedRoomConstructClientDataSuccess,
     userJoinedRoomConstructClientDataError
 ) => (ioEventResponseData, socket, userId) => {
-    console.log("join", ioEventResponseData.data)
-
     const user = getDataForUser(userId)
 
     socket.leaveAll()
