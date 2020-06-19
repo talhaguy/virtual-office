@@ -1,7 +1,7 @@
 import { Model, Document } from "mongoose"
 import {
     State,
-    GetDataForUserFunction,
+    GetDataForUserFunction as _GetDataForUserFunction,
     addOnlineUser as _addOnlineUser,
     getDataForUser as _getDataForUser,
     updateUserRoom as _updateUserRoom,
@@ -10,7 +10,7 @@ import {
     constructClientData as _constructClientData,
     deserializeUser as _deserializeUser,
 } from "./users"
-import { OnlineUser } from "../../shared-src/models"
+import { OnlineUser, ClientData } from "../../shared-src/models"
 import { Room, User } from "../models"
 import { RoomModel, UserModel } from "../databaseModels"
 
@@ -23,29 +23,51 @@ const initialState: State = {
 
 // MARK: users factories
 
-export const addOnlineUser = ((state: State) => (
+export interface AddOnlineUserFunction {
+    (key: string, onlineUserData: Pick<OnlineUser, "username" | "roomId">): void
+}
+
+export const addOnlineUser: AddOnlineUserFunction = ((state: State) => (
     key: string,
     onlineUserData: Pick<OnlineUser, "username" | "roomId">
 ) => _addOnlineUser(state, key, onlineUserData))(initialState)
 
-export const getDataForUser = ((state: State) => (userId: string) =>
-    _getDataForUser(state, userId))(initialState)
+export interface GetDataForUserFunction {
+    (userId: string): OnlineUser
+}
 
-export const updateUserRoom = ((state: State) => (
+export const getDataForUser: GetDataForUserFunction = ((state: State) => (
+    userId: string
+) => _getDataForUser(state, userId))(initialState)
+
+export interface UpdateUserRoomFunction {
+    (key: string, roomId: string): void
+}
+
+export const updateUserRoom: UpdateUserRoomFunction = ((state: State) => (
     key: string,
     roomId: string
 ) => _updateUserRoom(state, key, roomId))(initialState)
 
-export const removeOnlineUser = ((state: State) => (key: string) =>
-    _removeOnlineUser(state, key))(initialState)
+export interface RemoveOnlineUserFunction {
+    (key: string): void
+}
+
+export const removeOnlineUser: RemoveOnlineUserFunction = ((state: State) => (
+    key: string
+) => _removeOnlineUser(state, key))(initialState)
 
 export const getOnlineUsers = ((state: State) => () => _getOnlineUsers(state))(
     initialState
 )
 
-export const constructClientData = ((
+export interface ConstructClientDataFunction {
+    (userId: string): Promise<ClientData>
+}
+
+export const constructClientData: ConstructClientDataFunction = ((
     state: State,
-    getDataForUser: GetDataForUserFunction,
+    getDataForUser: _GetDataForUserFunction,
     RoomModel: Model<Room & Document, {}>
 ) => (userId: string) =>
     _constructClientData(state, getDataForUser, RoomModel, userId))(
@@ -54,10 +76,80 @@ export const constructClientData = ((
     RoomModel
 )
 
-export const deserializeUser = ((UserModel: Model<User & Document, {}>) => (
-    id: string
-) => _deserializeUser(UserModel, id))(UserModel)
+export interface DeserializeUserFunction {
+    (id: string): Promise<User & Document>
+}
+
+export const deserializeUser: DeserializeUserFunction = ((
+    UserModel: Model<User & Document, {}>
+) => (id: string) => _deserializeUser(UserModel, id))(UserModel)
 
 // MARK: initialize
 
-export { initialize } from "./initialize"
+import socketIO from "socket.io"
+import { Server } from "http"
+import { RequestHandler } from "express"
+import {
+    onConnectionFactory,
+    deserializeUserSuccessFactory,
+    deserializeUserError,
+    constructClientDataSuccessFactory,
+    onSocketDisconnectFactory,
+    socketDisconnectConstructClientDataSuccessFactory,
+    onUserJoinedRoomFunctionFactory,
+    userJoinedRoomConstructClientDataSuccessFactory,
+    userJoinedRoomConstructClientDataError,
+    onUserChatFactory,
+} from "./initialize"
+
+export function initialize(server: Server, sessionMiddleware: RequestHandler) {
+    const io = socketIO(server)
+
+    const deserializeUserSuccess = deserializeUserSuccessFactory(
+        addOnlineUser,
+        constructClientData
+    )
+
+    const constructClientDataSuccess = constructClientDataSuccessFactory(io)
+
+    const socketDisconnectConstructClientDataSuccess = socketDisconnectConstructClientDataSuccessFactory(
+        io
+    )
+
+    const onSocketDisconnect = onSocketDisconnectFactory(
+        removeOnlineUser,
+        constructClientData,
+        socketDisconnectConstructClientDataSuccess
+    )
+
+    const userJoinedRoomConstructClientDataSuccess = userJoinedRoomConstructClientDataSuccessFactory(
+        io
+    )
+
+    const onUserJoinedRoomFunction = onUserJoinedRoomFunctionFactory(
+        io,
+        getDataForUser,
+        updateUserRoom,
+        constructClientData,
+        userJoinedRoomConstructClientDataSuccess,
+        userJoinedRoomConstructClientDataError
+    )
+
+    const onUserChat = onUserChatFactory(io, getDataForUser)
+
+    const onConnection = onConnectionFactory(
+        deserializeUser,
+        deserializeUserSuccess,
+        deserializeUserError,
+        constructClientDataSuccess,
+        onSocketDisconnect,
+        onUserJoinedRoomFunction,
+        onUserChat
+    )
+
+    io.use((socket, next) => {
+        sessionMiddleware(socket.request, {} as any, next)
+    })
+
+    io.on("connection", onConnection)
+}
