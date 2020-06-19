@@ -84,6 +84,12 @@ export const deserializeUser: DeserializeUserFunction = ((
     UserModel: Model<User & Document, {}>
 ) => (id: string) => _deserializeUser(UserModel, id))(UserModel)
 
+// MARK: socket function interfaces
+
+export { OnSocketDisconnectFunction } from "./socket-disconnect"
+export { OnUserChatFunction } from "./socket-user-chat"
+export { OnUserJoinedRoomFunction } from "./socket-user-joined-room"
+
 // MARK: initialize
 
 import socketIO from "socket.io"
@@ -94,13 +100,17 @@ import {
     deserializeUserSuccessFactory,
     deserializeUserError,
     constructClientDataSuccessFactory,
+} from "./socket-connection"
+import {
     onSocketDisconnectFactory,
     socketDisconnectConstructClientDataSuccessFactory,
+} from "./socket-disconnect"
+import { onUserChatFactory } from "./socket-user-chat"
+import {
     onUserJoinedRoomFunctionFactory,
     userJoinedRoomConstructClientDataSuccessFactory,
     userJoinedRoomConstructClientDataError,
-    onUserChatFactory,
-} from "./initialize"
+} from "./socket-user-joined-room"
 
 export function initialize(server: Server, sessionMiddleware: RequestHandler) {
     const io = socketIO(server)
@@ -127,7 +137,6 @@ export function initialize(server: Server, sessionMiddleware: RequestHandler) {
     )
 
     const onUserJoinedRoomFunction = onUserJoinedRoomFunctionFactory(
-        io,
         getDataForUser,
         updateUserRoom,
         constructClientData,
