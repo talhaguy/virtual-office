@@ -8,6 +8,20 @@ import { BrowserRouter, Switch, Route } from "react-router-dom"
 import { ErrorMessages } from "../../constants/messages"
 
 describe("LoginPage", () => {
+    const setUpComponent = (dependencies: Dependencies) => {
+        return render(
+            <DependenciesContext.Provider value={dependencies}>
+                <BrowserRouter>
+                    <Switch>
+                        <Route path="*">
+                            <LoginPage />
+                        </Route>
+                    </Switch>
+                </BrowserRouter>
+            </DependenciesContext.Provider>
+        )
+    }
+
     beforeEach(() => {
         jest.clearAllMocks()
     })
@@ -27,17 +41,7 @@ describe("LoginPage", () => {
             },
         }
 
-        const component = render(
-            <DependenciesContext.Provider value={dependencies}>
-                <BrowserRouter>
-                    <Switch>
-                        <Route path="*">
-                            <LoginPage />
-                        </Route>
-                    </Switch>
-                </BrowserRouter>
-            </DependenciesContext.Provider>
-        )
+        const component = setUpComponent(dependencies)
 
         const usernameInput = component.getByLabelText(
             /Username/
@@ -110,6 +114,33 @@ describe("LoginPage", () => {
         loginButton.click()
 
         // form should be submitted
+        emailError = component.queryByText(ErrorMessages.EmailPattern)
+        passwordError = component.queryByText(ErrorMessages.PasswordPattern)
+        expect(emailError).toBeNull()
+        expect(passwordError).toBeNull()
         expect(dependencies.form.submitHtmlForm).toHaveBeenCalled()
+    })
+
+    it("should show info flash message if present", () => {
+        const initialClientData: InitialClientData = {
+            flashMessages: {
+                info: ["This is an info message"],
+            },
+        }
+        const dependencies: Dependencies = {
+            initialClientData,
+            validation: {
+                validatePassword,
+                validateEmail,
+            },
+            form: {
+                submitHtmlForm: jest.fn(),
+            },
+        }
+
+        const component = setUpComponent(dependencies)
+
+        const message = component.getByText("This is an info message")
+        expect(message).toBeInTheDocument()
     })
 })
