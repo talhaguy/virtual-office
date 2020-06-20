@@ -12,6 +12,22 @@ module.exports = {
                 "index.ts",
                 "databaseModels",
                 "constants.ts",
+                "models",
+            ],
+        },
+        {
+            displayName: "Shared",
+            testMatch: ["<rootDir>/shared-src/**/*.spec.ts"],
+            preset: "ts-jest",
+            testEnvironment: "node",
+            collectCoverage: true,
+            collectCoverageFrom: ["shared-src/**/*.ts"],
+            coveragePathIgnorePatterns: [
+                "mocks",
+                "index.ts",
+                "databaseModels",
+                "constants.ts",
+                "models",
             ],
         },
         {
