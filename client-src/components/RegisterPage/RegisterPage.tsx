@@ -5,7 +5,7 @@ import { FormRowVerticalSpacing, FormRow } from "../FormRow"
 import { SinglePageFormContainer } from "../SinglePageForm"
 import { TextInput } from "../TextInput"
 import { Button, ButtonSize, ButtonType } from "../Button"
-import * as styles "./RegisterPage.module.css"
+import * as styles from "./RegisterPage.module.css"
 
 interface RegisterFormHTMLFormControlsCollection
     extends HTMLFormControlsCollection {

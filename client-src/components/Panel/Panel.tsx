@@ -1,5 +1,5 @@
 import React from "react"
-import * as styles "./Panel.module.css"
+import * as styles from "./Panel.module.css"
 
 export enum PanelType {
     Normal,

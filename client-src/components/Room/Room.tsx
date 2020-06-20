@@ -3,7 +3,7 @@ import React from "react"
 import { RoomClientData, DoorSide } from "../../../shared-src/models"
 import { RoomUser } from "../RoomUser"
 
-import * as styles "./Room.module.css"
+import * as styles from "./Room.module.css"
 
 interface RoomProps {
     room: RoomClientData

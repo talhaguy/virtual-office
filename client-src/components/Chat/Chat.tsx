@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react"
 import { TextInput } from "../TextInput"
-import * as styles "./Chat.module.css"
+import * as styles from "./Chat.module.css"
 import { Button, ButtonType, ButtonSize } from "../Button"
 import {
     IOEventChatMessageData,

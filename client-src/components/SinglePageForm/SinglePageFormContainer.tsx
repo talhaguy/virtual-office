@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import * as styles "./SinglePageFormContainer.module.css"
+import * as styles from "./SinglePageFormContainer.module.css"
 import { Panel } from "../Panel"
 import { DependenciesContext } from "../../DependenciesContext"
 import { Message, MessageType } from "../Message"

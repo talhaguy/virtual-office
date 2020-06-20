@@ -1,6 +1,6 @@
 import React from "react"
 import { UserColor } from "../../../shared-src/models/UserColor"
-import * as styles "./RoomUser.module.css"
+import * as styles from "./RoomUser.module.css"
 
 interface RoomUserProps {
     username: string

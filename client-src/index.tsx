@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 
 import { InitialClientData } from "../shared-src/models"
 import { validateEmail, validatePassword } from "../shared-src/validation"
+import { submitHtmlForm } from "./helpers/form"
 import { DependenciesContext, Dependencies } from "./DependenciesContext"
 import { App } from "./components/App"
 
@@ -15,6 +16,9 @@ const dependencies: Dependencies = {
     validation: {
         validateEmail,
         validatePassword,
+    },
+    form: {
+        submitHtmlForm,
     },
 }
 
