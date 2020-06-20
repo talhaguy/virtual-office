@@ -1,143 +1,93 @@
 import { Request, Response } from "express"
-import { mock, instance, resetCalls, verify, when, deepEqual } from "ts-mockito"
 import { registrationValidation } from "./registrationValidation"
 
 describe("registrationValidation", () => {
-    const reqMock = mock<Request>()
-    const req = instance(reqMock)
-
-    const resMock = mock<Response>()
-    const res = instance(resMock)
-
-    const next = jest.fn()
-
-    function clearMocks() {
-        resetCalls(reqMock)
-        when(resMock.status(401)).thenReturn(res)
-        resetCalls(resMock)
-        next.mockClear()
-    }
-
-    beforeEach(() => {
-        clearMocks()
-    })
-
     describe("registrationValidation()", () => {
-        it("should return a 401 status and an error payload on empty password or empty username", () => {
-            // both username and password blank
+        const res = ({
+            redirect: jest.fn(),
+        } as unknown) as Response
+        const next = jest.fn()
 
-            req.body = {
-                username: "",
-                password: "",
-            }
-
-            registrationValidation(req, res, next)
-
-            let expectedResponse = {
-                status: "ERROR",
-                message: "Empty username. Empty password.",
-            }
-            verify(resMock.status(401)).once()
-            verify(resMock.send(deepEqual(expectedResponse))).once()
-            expect(next).toBeCalledTimes(0)
-
-            // only username blank
-
-            clearMocks()
-
-            req.body = {
-                username: "",
-                password: "asdf",
-            }
-
-            registrationValidation(req, res, next)
-
-            expectedResponse = {
-                status: "ERROR",
-                message: "Empty username. ",
-            }
-            verify(resMock.status(401)).once()
-            verify(resMock.send(deepEqual(expectedResponse))).once()
-            expect(next).toBeCalledTimes(0)
-
-            // only password blank
-
-            clearMocks()
-
-            req.body = {
-                username: "asdf",
-                password: "",
-            }
-
-            registrationValidation(req, res, next)
-
-            expectedResponse = {
-                status: "ERROR",
-                message: "Empty password.",
-            }
-            verify(resMock.status(401)).once()
-            verify(resMock.send(deepEqual(expectedResponse))).once()
-            expect(next).toBeCalledTimes(0)
+        beforeEach(() => {
+            jest.clearAllMocks()
         })
 
-        it("should send a 401 error and error response on invalid username or password", () => {
-            // both wrong format
+        it("should add a flash message when username fails validation and redirect to the registration page and NOT run the next function", () => {
+            const req = ({
+                body: {
+                    username: "user", // invalid b/c not an email
+                    password: "asdfasdf",
+                },
+                flash: jest.fn(),
+            } as unknown) as Request
 
-            req.body = {
-                username: "asdf",
-                password: "asdf",
-            }
             registrationValidation(req, res, next)
-            let expectedResponse = {
-                status: "ERROR",
-                message: "Wrong username format. Wrong password format.",
-            }
-            verify(resMock.status(401)).once()
-            verify(resMock.send(deepEqual(expectedResponse))).once()
-            expect(next).toBeCalledTimes(0)
 
-            // username bad format
-
-            clearMocks()
-
-            req.body = {
-                username: "asdf",
-                password: "asdfasdf",
-            }
-            registrationValidation(req, res, next)
-            expectedResponse = {
-                status: "ERROR",
-                message: "Wrong username format. ",
-            }
-            verify(resMock.status(401)).once()
-            verify(resMock.send(deepEqual(expectedResponse))).once()
-            expect(next).toBeCalledTimes(0)
-
-            // password bad format
-
-            clearMocks()
-
-            req.body = {
-                username: "a@a.com",
-                password: "a s d f",
-            }
-            registrationValidation(req, res, next)
-            expectedResponse = {
-                status: "ERROR",
-                message: "Wrong password format.",
-            }
-            verify(resMock.status(401)).once()
-            verify(resMock.send(deepEqual(expectedResponse))).once()
-            expect(next).toBeCalledTimes(0)
+            expect(req.flash).toBeCalledWith("error", "Wrong username format")
+            expect(res.redirect).toBeCalledWith("/register")
+            expect(next).not.toBeCalled()
         })
 
-        it("should call the next function when validations pass", () => {
-            req.body = {
-                username: "asdf@asdf.com",
-                password: "123456",
-            }
+        it("should add a flash message when password fails validation and redirect to the registration page and NOT run the next function", () => {
+            const req = ({
+                body: {
+                    username: "user@site.com",
+                    password: "asdf", // invalid b/c too short
+                },
+                flash: jest.fn(),
+            } as unknown) as Request
+
             registrationValidation(req, res, next)
-            expect(next).toBeCalledTimes(1)
+
+            expect(req.flash).toBeCalledWith("error", "Wrong password format")
+            expect(res.redirect).toBeCalledWith("/register")
+            expect(next).not.toBeCalled()
+        })
+
+        it("should add flash messages when username and password both fail validation and redirect to the registration page and NOT run the next function", () => {
+            const req = ({
+                body: {
+                    username: "user", // invalid b/c not an email
+                    password: "asdf", // invalid b/c too short
+                },
+                flash: jest.fn(),
+            } as unknown) as Request
+
+            registrationValidation(req, res, next)
+
+            expect(req.flash).toBeCalledTimes(2)
+
+            expect((req.flash as jest.Mock<any, any>).mock.calls[0][0]).toBe(
+                "error"
+            )
+            expect((req.flash as jest.Mock<any, any>).mock.calls[0][1]).toBe(
+                "Wrong username format"
+            )
+
+            expect((req.flash as jest.Mock<any, any>).mock.calls[1][0]).toBe(
+                "error"
+            )
+            expect((req.flash as jest.Mock<any, any>).mock.calls[1][1]).toBe(
+                "Wrong password format"
+            )
+
+            expect(res.redirect).toBeCalledWith("/register")
+
+            expect(next).not.toBeCalled()
+        })
+
+        it("should run the next function if username and password passes validation", () => {
+            const req = ({
+                body: {
+                    username: "user@site.com",
+                    password: "asdfasdf",
+                },
+                flash: jest.fn(),
+            } as unknown) as Request
+
+            registrationValidation(req, res, next)
+
+            expect(next).toBeCalled()
         })
     })
 })

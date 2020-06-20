@@ -1,38 +1,61 @@
-import { Request, Response } from "express"
-import { mock, instance, resetCalls, verify, when, deepEqual } from "ts-mockito"
 import { logoutHandler, isLoggedInHandler } from "./loginRouteHandlers"
+import { Response, Request } from "express"
 
-describe("loginRouteHandlers", () => {
-    const reqMock = mock<Request>()
-    const req = instance(reqMock)
+describe("logoutRouteHandlers", () => {
+    const req = ({
+        logout: jest.fn(),
+    } as unknown) as Request
 
-    const resMock = mock<Response>()
-    const res = instance(resMock)
+    const res = ({
+        json: jest.fn(),
+        redirect: jest.fn(),
+    } as unknown) as Response
 
     beforeEach(() => {
-        resetCalls(reqMock)
-        resetCalls(resMock)
+        jest.clearAllMocks()
     })
 
     describe("logoutHandler()", () => {
-        it("should logout the user and redirect to the home page", () => {
+        beforeEach(() => {
+            jest.clearAllMocks()
+        })
+
+        it("should log the user out and redirect to the root page", () => {
             logoutHandler(req, res)
-            verify(reqMock.logout()).once()
-            verify(resMock.redirect("/")).once()
+            expect(req.logout).toBeCalled()
+            expect(res.redirect).toBeCalledWith("/")
         })
     })
 
     describe("isLoggedInHandler()", () => {
-        it("should return a json response indicating if a user is logged in or not", () => {
-            when(reqMock.isAuthenticated()).thenReturn(true)
+        beforeEach(() => {
+            jest.clearAllMocks()
+        })
+
+        it("should send json data back indicating logged in status", () => {
+            let req = ({
+                logout: jest.fn(),
+                isAuthenticated: jest.fn().mockReturnValue(true),
+            } as unknown) as Request
+
             isLoggedInHandler(req, res)
-            verify(
-                resMock.json(
-                    deepEqual({
-                        loggedIn: true,
-                    })
-                )
-            ).once()
+
+            expect(res.json).toBeCalledWith({
+                loggedIn: true,
+            })
+
+            jest.clearAllMocks()
+
+            req = ({
+                logout: jest.fn(),
+                isAuthenticated: jest.fn().mockReturnValue(false),
+            } as unknown) as Request
+
+            isLoggedInHandler(req, res)
+
+            expect(res.json).toBeCalledWith({
+                loggedIn: false,
+            })
         })
     })
 })

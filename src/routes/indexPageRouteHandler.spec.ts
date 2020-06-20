@@ -1,45 +1,50 @@
 import { indexPageHandler } from "./indexPageRouteHandler"
-import { mock, instance, resetCalls, verify, deepEqual } from "ts-mockito"
 import { Response, Request } from "express"
 
 describe("indexPageRouteHandler", () => {
     describe("indexPageHandler()", () => {
-        const requestMock = mock<Request>()
-        const request = instance(requestMock)
-        const responseMock = mock<Response>()
-        const response = instance(responseMock)
+        const username = "user@site.com"
+
+        const req = ({
+            user: {
+                username,
+            },
+            flash: jest.fn().mockImplementation(() => ({
+                someKey: ["First message", "Second Message"],
+            })),
+        } as unknown) as Request
+
+        const res = ({
+            render: jest.fn(),
+        } as unknown) as Response
 
         beforeEach(() => {
-            resetCalls(requestMock)
-            resetCalls(responseMock)
+            jest.clearAllMocks()
+        })
+
+        it("should not add a username to the view data when `req.user` is not present", () => {
+            const req = ({
+                flash: jest.fn().mockImplementation(() => ({
+                    someKey: ["First message", "Second Message"],
+                })),
+            } as unknown) as Request
+
+            indexPageHandler(req, res)
+            expect(res.render).toBeCalledWith("index", {
+                flashMessages: {
+                    someKey: ["First message", "Second Message"],
+                },
+            })
         })
 
         it("should render the index view file with the initial client data", () => {
-            // send no data if user is not logged in
-            let expectedInitialClientData = {}
-            indexPageHandler(request, response)
-            verify(
-                responseMock.render(
-                    "index",
-                    deepEqual(expectedInitialClientData)
-                )
-            ).once()
-
-            // send username if user is logged in
-            resetCalls(responseMock)
-            request.user = {
-                username: "yuna@spira.com",
-            }
-            expectedInitialClientData = {
-                username: "yuna@spira.com",
-            }
-            indexPageHandler(request, response)
-            verify(
-                responseMock.render(
-                    "index",
-                    deepEqual(expectedInitialClientData)
-                )
-            )
+            indexPageHandler(req, res)
+            expect(res.render).toBeCalledWith("index", {
+                username,
+                flashMessages: {
+                    someKey: ["First message", "Second Message"],
+                },
+            })
         })
     })
 })

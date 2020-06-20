@@ -15,8 +15,8 @@
         "server:build": "npm run server:clean; tsc && cp -r src/views dist/src",
         "client:build": "parcel build client-src/index.tsx --out-dir public --out-file scripts.js",
         "client:watch": "parcel watch client-src/index.tsx --out-dir public --out-file scripts.js",
-        "build": "npm run server:build && npm run client:build",
         "db:reinit": "node dist/build-scripts/index.js",
+        "build:all": "npm run server:build && npm run client:build && npm run db:reinit",
         "start": "node dist/src/index.js"
     },
     "repository": {

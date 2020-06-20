@@ -1,35 +1,50 @@
-# virtual-office-server
+# Virtual Office
 
-## Prepare .env file
+## Prerequisite Installations
 
-Create a dev `.env` file like so:
+-   Node
+-   MongoDB
+
+## How To Run
+
+### Prepare .env file
+
+Create a dev `.env` file in the repo root like so:
 
 ```
 NODE_ENV=development
 PORT=8000
-SESSION_SECRET=keyboard cat
+SESSION_SECRET=penguinmonkey
 DB_PATH=mongodb://localhost/virtualOfficeDev
 ```
 
-## Build server
+### Build Code
+
+```
+npm run build:all
+```
+
+### Start server
+
+```
+npm run start
+```
+
+## Other Commands
+
+### Build server
 
 ```
 npm run server:build
 ```
 
-## Build client
+### Build client
 
 ```
 npm run client:build
 ```
 
-## Build both server and client
-
-```
-npm run build
-```
-
-## Reinit database
+### Reinit database
 
 Build the server
 

@@ -1,71 +1,78 @@
-import { Document } from "mongoose"
-import { OnlineUserData, User } from "../models"
-import {
-    OnlineUser,
-    RoomClientData,
-    ClientData,
-    UserColor,
-} from "../../shared-src/models"
-import { UserModel, RoomModel } from "../databaseModels"
+import { Document, Model } from "mongoose"
+import { OnlineUserData, User, Room } from "../models"
+import { OnlineUser, RoomClientData, ClientData } from "../../shared-src/models"
+import { userColorsList } from "./constants"
 
-const userColors = [
-    UserColor.Red,
-    UserColor.Orange,
-    UserColor.Blue,
-    UserColor.Yellow,
-    UserColor.Green,
-    UserColor.Purple,
-    UserColor.Cyan,
-    UserColor.SkyBlue,
-]
+// MARK: State
 
-let userColorIndex = -1
-
-export function getNextUserColor() {
-    if (userColorIndex === userColors.length - 1) {
-        userColorIndex = 0
-    } else {
-        userColorIndex += 1
-    }
-
-    return userColors[userColorIndex]
+export interface State {
+    currentIndex: number
+    onlineUsersMap: OnlineUserData
 }
 
-const onlineUsers: OnlineUserData = {}
+// MARK: addOnlineUser()
+
+function incrementUserColorIndex(state: State) {
+    state.currentIndex =
+        state.currentIndex >= userColorsList.length - 1
+            ? 0
+            : state.currentIndex + 1
+}
+
+function getNextUserColor(state: State) {
+    return userColorsList[state.currentIndex]
+}
 
 export function addOnlineUser(
+    state: State,
     key: string,
     onlineUserData: Omit<OnlineUser, "color">
 ) {
-    onlineUsers[key] = {
+    incrementUserColorIndex(state)
+
+    state.onlineUsersMap[key] = {
         username: onlineUserData.username,
         roomId: onlineUserData.roomId,
-        color: getNextUserColor(),
+        color: getNextUserColor(state),
     }
 }
 
-export function getDataForUser(userId: string) {
-    return onlineUsers[userId]
+// MARK: getDataForUser()
+
+export interface GetDataForUserFunction {
+    (state: State, userId: string): OnlineUser
 }
 
-export function updateUserRoom(key: string, roomId: string) {
-    onlineUsers[key].roomId = roomId
+export function getDataForUser(state: State, userId: string) {
+    return state.onlineUsersMap[userId]
 }
 
-export function removeOnlineUser(key: string) {
-    delete onlineUsers[key]
+// MARK: updateUserRoom()
+
+export function updateUserRoom(state: State, key: string, roomId: string) {
+    state.onlineUsersMap[key].roomId = roomId
 }
 
-export function getOnlineUsers() {
-    return onlineUsers
+// MARK: removeOnlineUser()
+
+export function removeOnlineUser(state: State, key: string) {
+    delete state.onlineUsersMap[key]
 }
 
-export function getOnlineUsersList() {
-    return Object.values(onlineUsers)
+// MARK: getOnlineUsers()
+
+export function getOnlineUsers(state: State) {
+    return state.onlineUsersMap
 }
 
-function getUserRoomsMap() {
-    return Object.values(onlineUsers).reduce<{
+// MARK: constructClientData()
+
+function getOnlineUsersList(state: State) {
+    return Object.values(state.onlineUsersMap)
+}
+
+function getUserRoomsMap(state: State) {
+    return Object.values(state.onlineUsersMap).reduce<{
         [key: string]: Omit<OnlineUser, "roomId">[]
     }>((accum, user) => {
         const room = accum[user.roomId]
@@ -82,12 +89,17 @@ function getUserRoomsMap() {
     }, {})
 }
 
-export function constructClientData(userId: string) {
+export function constructClientData(
+    state: State,
+    getDataForUser: GetDataForUserFunction,
+    RoomModel: Model<Room & Document, {}>,
+    userId: string
+) {
     return new Promise<ClientData>((res, rej) => {
         RoomModel.find()
             .then((rooms) => {
-                const onlineUsers = getOnlineUsersList()
-                const userRoomsMap = getUserRoomsMap()
+                const onlineUsers = getOnlineUsersList(state)
+                const userRoomsMap = getUserRoomsMap(state)
                 const roomData: RoomClientData[] = rooms.map((room) => {
                     return {
                         id: room.id,
@@ -104,7 +116,7 @@ export function constructClientData(userId: string) {
                         roomType: room.roomType,
                     }
                 })
-                const currentUser = getDataForUser(userId)
+                const currentUser = getDataForUser(state, userId)
 
                 res({
                     currentUser,
@@ -118,7 +130,12 @@ export function constructClientData(userId: string) {
     })
 }
 
-export function deserializeUser(id: string) {
+// MARK: deserializeUser()
+
+export function deserializeUser(
+    UserModel: Model<User & Document, {}>,
+    id: string
+) {
     return new Promise<User & Document>((res, rej) => {
         UserModel.findById(id)
             .then((user) => {
