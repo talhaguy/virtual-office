@@ -27,8 +27,6 @@ export const onUserChatFactory: OnUserChatFactoryFunction = (
     io,
     getDataForUser
 ) => (ioEventResponseData, userId) => {
-    console.log("got a chat...", ioEventResponseData.data.message)
-
     const user = getDataForUser(userId)
     const time = new Date().getTime()
 
@@ -42,8 +40,6 @@ export const onUserChatFactory: OnUserChatFactoryFunction = (
             time,
         },
     }
-
-    console.log("emitting chat data...", ioChatEventResponseData)
 
     io.to(ioEventResponseData.data.roomId).emit(
         IOEvents.UserChat,
