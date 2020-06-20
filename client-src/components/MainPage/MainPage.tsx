@@ -17,7 +17,7 @@ import {
 import { Room } from "../Room"
 import { IOEvents } from "../../../shared-src/constants"
 
-import styles from "./MainPage.module.css"
+import * as styles "./MainPage.module.css"
 import { Panel, PanelType, PanelTitlePosition } from "../Panel"
 import { Button, ButtonSize } from "../Button"
 

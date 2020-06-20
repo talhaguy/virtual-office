@@ -1,6 +1,6 @@
 import React from "react"
 import { Button, ButtonType, ButtonSize } from "../Button"
-import styles from "./LogoutForm.module.css"
+import * as styles "./LogoutForm.module.css"
 
 interface LogoutFormProps {
     username: string

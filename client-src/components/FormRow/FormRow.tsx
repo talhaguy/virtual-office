@@ -1,5 +1,5 @@
 import React from "react"
-import styles from "./FormRow.module.css"
+import * as styles "./FormRow.module.css"
 
 export enum FormRowVerticalSpacing {
     Medium,

@@ -44,6 +44,15 @@ module.exports = {
                 "constants.ts",
             ],
             setupFilesAfterEnv: ["<rootDir>/client-src/setupTests.ts"],
+            globals: {
+                // from https://github.com/facebook/jest/issues/10024#issuecomment-632268333
+                "ts-jest": {
+                    diagnostics: false,
+                },
+            },
+            moduleNameMapper: {
+                "\\.css$": "<rootDir>/__mocks__/styleMock.js",
+            },
         },
     ],
 }
