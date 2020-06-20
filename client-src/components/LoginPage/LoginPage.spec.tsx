@@ -1,5 +1,5 @@
 import React from "react"
-import { render } from "@testing-library/react"
+import { render, fireEvent } from "@testing-library/react"
 import { LoginPage } from "./LoginPage"
 import { DependenciesContext, Dependencies } from "../../DependenciesContext"
 import { InitialClientData } from "../../../shared-src/models"
@@ -142,5 +142,112 @@ describe("LoginPage", () => {
 
         const message = component.getByText("This is an info message")
         expect(message).toBeInTheDocument()
+    })
+
+    it("should show error flash message if present", () => {
+        const initialClientData: InitialClientData = {
+            flashMessages: {
+                error: ["This is an error message"],
+            },
+        }
+        const dependencies: Dependencies = {
+            initialClientData,
+            validation: {
+                validatePassword,
+                validateEmail,
+            },
+            form: {
+                submitHtmlForm: jest.fn(),
+            },
+        }
+
+        const component = setUpComponent(dependencies)
+
+        const message = component.getByText("This is an error message")
+        expect(message).toBeInTheDocument()
+    })
+
+    it("should apply text field validations on blur and focus", () => {
+        const initialClientData: InitialClientData = {
+            flashMessages: {},
+        }
+        const dependencies: Dependencies = {
+            initialClientData,
+            validation: {
+                validatePassword,
+                validateEmail,
+            },
+            form: {
+                submitHtmlForm: jest.fn(),
+            },
+        }
+
+        const component = setUpComponent(dependencies)
+
+        const usernameInput = component.getByLabelText(
+            /Username/
+        ) as HTMLInputElement
+
+        // error messages should NOT be visible initially
+        let emailError = component.queryByText(ErrorMessages.EmailPattern)
+        expect(emailError).toBeNull()
+
+        // input an invalid username
+        usernameInput.value = "user"
+        fireEvent.blur(usernameInput)
+
+        // error message should be visible
+        emailError = component.getByText(ErrorMessages.EmailPattern)
+        expect(emailError).toBeInTheDocument()
+
+        // input a valid username
+        usernameInput.value = "user@site.com"
+        fireEvent.blur(usernameInput)
+
+        // error message should NOT be visible
+        emailError = component.queryByText(ErrorMessages.EmailPattern)
+        expect(emailError).toBeNull()
+    })
+
+    it("should float field label on when field has value", () => {
+        const initialClientData: InitialClientData = {
+            flashMessages: {},
+        }
+        const dependencies: Dependencies = {
+            initialClientData,
+            validation: {
+                validatePassword,
+                validateEmail,
+            },
+            form: {
+                submitHtmlForm: jest.fn(),
+            },
+        }
+
+        const component = setUpComponent(dependencies)
+
+        const usernameInput = component.getByLabelText(
+            /Username/
+        ) as HTMLInputElement
+
+        // input a field value
+        usernameInput.value = ""
+        fireEvent.change(usernameInput, {
+            target: { value: "u" },
+        })
+
+        // field label should be floating
+        let usernameLabel = component.getByText(/username/i)
+        expect(usernameLabel.classList.contains("labelFloat")).toBeTruthy()
+
+        // remove input a field value
+        usernameInput.value = "u"
+        fireEvent.change(usernameInput, {
+            target: { value: "" },
+        })
+
+        // field label should NOT be floating
+        usernameLabel = component.getByText(/username/i)
+        expect(usernameLabel.classList.contains("labelFloat")).toBeFalsy()
     })
 })
