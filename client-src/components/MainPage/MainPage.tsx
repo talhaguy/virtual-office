@@ -5,8 +5,6 @@ import { Chat } from "../Chat"
 import {
     OnlineUser,
     RoomClientData,
-    ServerResponse,
-    RepsonseStatusText,
     ClientData,
     IOEventResponseData,
     IOEventChatMessageData,
@@ -33,7 +31,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         roomId: "desksRoom",
         color: null,
     })
-    const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
     const [rooms, setRooms] = useState<RoomClientData[]>([])
     const [messages, setMessages] = useState<IOEventChatMessageData[]>([])
     const socketRef = useRef<SocketIOClient.Socket>(null)
@@ -53,7 +50,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                     (user) => user.username === currentUser.username
                 )
                 setCurrentUser(foundCurrentUser)
-                setOnlineUsers(ioEventResponseData.data.onlineUsers)
                 setRooms(ioEventResponseData.data.rooms)
             }
         )

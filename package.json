@@ -4,9 +4,14 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "prettier:check": "prettier --check 'src/**/*'",
-        "prettier:fix": "prettier --write 'src/**/*'",
-        "lint": "eslint './src/**/*.{ts,tsx}'",
+        "server:prettier:check": "prettier --check 'src/**/*'",
+        "client:prettier:check": "prettier --check 'client-src/**/*'",
+        "shared:prettier:check": "prettier --check 'shared-src/**/*'",
+        "all:prettier:check": "npm run server:prettier:check && npm run client:prettier:check && npm run shared:prettier:check",
+        "server:lint": "eslint './src/**/*.{ts,tsx}'",
+        "client:lint": "eslint './client-src/**/*.{ts,tsx}'",
+        "shared:lint": "eslint './shared-src/**/*.{ts,tsx}'",
+        "all:lint": "npm run server:lint && npm run client:lint && npm run shared:lint",
         "test": "jest --coverage=true",
         "test:watch": "jest --watch",
         "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand",
@@ -16,7 +21,7 @@
         "client:build": "parcel build client-src/index.tsx --out-dir public --out-file scripts.js",
         "client:watch": "parcel watch client-src/index.tsx --out-dir public --out-file scripts.js",
         "db:reinit": "node dist/build-scripts/index.js",
-        "build:all": "npm run server:build && npm run client:build && npm run db:reinit",
+        "all:build": "npm run server:build && npm run client:build && npm run db:reinit",
         "start": "node dist/src/index.js"
     },
     "repository": {
