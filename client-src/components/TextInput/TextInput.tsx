@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import styles from "./TextInput.module.css"
+import * as styles from "./TextInput.module.css"
 
 interface TextInputProps {
     type?: string
@@ -19,8 +19,12 @@ export const TextInput: React.FC<TextInputProps> = ({
     autocomplete = "on",
     isValid = true,
     errorMessage = "",
-    validation = () => {},
-    onFocusHandler = () => {},
+    validation = () => {
+        return
+    },
+    onFocusHandler = () => {
+        return
+    },
 }) => {
     const [hasValue, setHasValue] = useState(false)
     const id = `textInput-${name}`
@@ -30,10 +34,8 @@ export const TextInput: React.FC<TextInputProps> = ({
     }
 
     const onBlurHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("blur")
         const inputValue = event.currentTarget.value
         if (inputValue !== "") {
-            console.log("validating...")
             validation(event.currentTarget.value)
         }
     }

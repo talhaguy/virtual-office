@@ -5,7 +5,8 @@ import { FormRowVerticalSpacing, FormRow } from "../FormRow"
 import { SinglePageFormContainer } from "../SinglePageForm"
 import { TextInput } from "../TextInput"
 import { Button, ButtonSize, ButtonType } from "../Button"
-import styles from "./RegisterPage.module.css"
+import * as styles from "./RegisterPage.module.css"
+import { ErrorMessages } from "../../constants/messages"
 
 interface RegisterFormHTMLFormControlsCollection
     extends HTMLFormControlsCollection {
@@ -17,6 +18,7 @@ interface RegisterFormHTMLFormControlsCollection
 export const RegisterPage = () => {
     const {
         validation: { validateEmail, validatePassword },
+        form: { submitHtmlForm },
     } = useContext(DependenciesContext)
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isPasswordValid, setIsPasswordValid] = useState(true)
@@ -51,7 +53,7 @@ export const RegisterPage = () => {
             isPasswordCheckValid &&
             isPasswordMatching
         ) {
-            event.currentTarget.submit()
+            submitHtmlForm(event.currentTarget)
         }
     }
 
@@ -70,7 +72,7 @@ export const RegisterPage = () => {
                         validation={(value) => {
                             setIsEmailValid(validateEmail(value))
                         }}
-                        errorMessage="Please enter an appropriate email address"
+                        errorMessage={ErrorMessages.EmailPattern}
                     />
                 </FormRow>
                 <FormRow>
@@ -82,7 +84,7 @@ export const RegisterPage = () => {
                         validation={(value) => {
                             setIsPasswordValid(validatePassword(value))
                         }}
-                        errorMessage="Please enter a password of at least 6 characters"
+                        errorMessage={ErrorMessages.PasswordPattern}
                         onFocusHandler={clearPasswordMatchingMessage}
                     />
                 </FormRow>
@@ -95,14 +97,14 @@ export const RegisterPage = () => {
                         validation={(value) => {
                             setIsPasswordCheckValid(validatePassword(value))
                         }}
-                        errorMessage="Please enter a password of at least 6 characters"
+                        errorMessage={ErrorMessages.PasswordPattern}
                         onFocusHandler={clearPasswordMatchingMessage}
                     />
                 </FormRow>
                 {!isPasswordMatching ? (
                     <FormRow>
                         <span className={styles.errorMessage}>
-                            Please enter matching passwords
+                            {ErrorMessages.RegisterPasswordMismatch}
                         </span>
                     </FormRow>
                 ) : (

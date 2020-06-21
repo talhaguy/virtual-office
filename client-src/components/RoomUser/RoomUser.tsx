@@ -1,6 +1,6 @@
 import React from "react"
 import { UserColor } from "../../../shared-src/models/UserColor"
-import styles from "./RoomUser.module.css"
+import * as styles from "./RoomUser.module.css"
 
 interface RoomUserProps {
     username: string
@@ -35,7 +35,7 @@ export const RoomUser: React.FC<RoomUserProps> = ({ username, color }) => {
             userColorClassName = styles.userColorSkyBlue
             break
     }
-    console.log(color)
+
     return (
         <div>
             <div

@@ -4,6 +4,7 @@ import {
     ValidatePasswordFunction,
     ValidateEmailFunction,
 } from "../shared-src/validation"
+import { SubmitHtmlFormFunction } from "./helpers/form"
 
 export interface Dependencies {
     initialClientData: InitialClientData
@@ -11,6 +12,10 @@ export interface Dependencies {
         validatePassword: ValidatePasswordFunction
         validateEmail: ValidateEmailFunction
     }
+    form: {
+        submitHtmlForm: SubmitHtmlFormFunction
+    }
+    io: SocketIOClientStatic
 }
 
 export const DependenciesContext = React.createContext<Dependencies>(null)

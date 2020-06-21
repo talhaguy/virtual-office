@@ -6,6 +6,7 @@ import { Button, ButtonSize, ButtonType } from "../Button"
 import { FormRow, FormRowVerticalSpacing } from "../FormRow"
 import { DependenciesContext } from "../../DependenciesContext"
 import { SinglePageFormContainer } from "../SinglePageForm"
+import { ErrorMessages } from "../../constants/messages"
 
 interface LoginFormHTMLFormControlsCollection
     extends HTMLFormControlsCollection {
@@ -16,6 +17,7 @@ interface LoginFormHTMLFormControlsCollection
 export const LoginPage = () => {
     const {
         validation: { validateEmail, validatePassword },
+        form: { submitHtmlForm },
     } = useContext(DependenciesContext)
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isPasswordValid, setIsPasswordValid] = useState(true)
@@ -35,7 +37,7 @@ export const LoginPage = () => {
         setIsPasswordValid(isPasswordValid)
 
         if (isEmailValid && isPasswordValid) {
-            event.currentTarget.submit()
+            submitHtmlForm(event.currentTarget)
         }
     }
 
@@ -50,7 +52,7 @@ export const LoginPage = () => {
                         validation={(value) => {
                             setIsEmailValid(validateEmail(value))
                         }}
-                        errorMessage="Please enter an appropriate email address"
+                        errorMessage={ErrorMessages.EmailPattern}
                     />
                 </FormRow>
                 <FormRow>
@@ -62,7 +64,7 @@ export const LoginPage = () => {
                         validation={(value) => {
                             setIsPasswordValid(validatePassword(value))
                         }}
-                        errorMessage="Please enter a password of at least 6 characters"
+                        errorMessage={ErrorMessages.PasswordPattern}
                     />
                 </FormRow>
                 <FormRow verticalSpacing={FormRowVerticalSpacing.Large}>
