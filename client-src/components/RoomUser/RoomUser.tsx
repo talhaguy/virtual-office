@@ -35,7 +35,7 @@ export const RoomUser: React.FC<RoomUserProps> = ({ username, color }) => {
             userColorClassName = styles.userColorSkyBlue
             break
     }
-    console.log(color)
+
     return (
         <div>
             <div
