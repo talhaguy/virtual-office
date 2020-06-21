@@ -1,11 +1,21 @@
 # Virtual Office
 
+![Screenshot of main screen](./screenshot.png)
+
 ## Prerequisite Installations
 
 -   Node
 -   MongoDB
 
 ## How To Run
+
+### Download dependencies
+
+Clone repo and download dependencies:
+
+```
+npm install
+```
 
 ### Prepare .env file
 
@@ -21,7 +31,7 @@ DB_PATH=mongodb://localhost/virtualOfficeDev
 ### Build Code
 
 ```
-npm run build:all
+npm run all:build
 ```
 
 ### Start server
@@ -30,15 +40,19 @@ npm run build:all
 npm run start
 ```
 
-## Other Commands
+Access web app at [http://localhost:8000/](http://localhost:8000/) (or whatever port you set in the .env).
 
-### Build server
+## Useful Development Commands
+
+Please see the package.json for all the build commands. The below list is a selected subset of those.
+
+### Build server only
 
 ```
 npm run server:build
 ```
 
-### Build client
+### Build client only
 
 ```
 npm run client:build
@@ -56,4 +70,18 @@ Run DB script
 
 ```
 npm run db:reinit
+```
+
+### Run linting
+
+Prettier
+
+```
+npm run all:prettier:check
+```
+
+ESLint
+
+```
+npm run all:lint
 ```

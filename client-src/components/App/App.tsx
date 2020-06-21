@@ -11,7 +11,7 @@ export function App() {
     const {
         initialClientData: { username },
     } = useContext(DependenciesContext)
-    const [isLoggedIn, setIsLoggedIn] = useState(username ? true : false)
+    const [isLoggedIn] = useState(username ? true : false)
 
     return (
         <BrowserRouter>
