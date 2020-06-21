@@ -10,6 +10,8 @@ import {
     UserColor,
     RoomTitlePosition,
     DoorSide,
+    IOEventChatMessageData,
+    ChatMessageType,
 } from "../../../shared-src/models"
 import { validatePassword, validateEmail } from "../../../shared-src/validation"
 import { RoomType, IOEvents } from "../../../shared-src/constants"
@@ -229,5 +231,75 @@ describe("MainPage", () => {
         expect(dependencies.form.submitHtmlForm).toBeCalled()
     })
 
-    it("should be able to send a chat message", () => {})
+    it("should be able to send a chat message", () => {
+        const initialClientData: InitialClientData = {
+            username: "user@site.com",
+            flashMessages: {},
+        }
+        const dependencies: Dependencies = {
+            initialClientData,
+            validation: {
+                validatePassword,
+                validateEmail,
+            },
+            form: {
+                submitHtmlForm: jest.fn(),
+            },
+            io,
+        }
+        const component = setupComponent(dependencies)
+
+        // send data to client
+        const clientDataIoEventResponseData = createClientDataIoEventResponseData(
+            "desksRoom"
+        )
+        const onlineUsersChangeCall = socket.on.mock.calls.find((call) => {
+            return call[0] === IOEvents.OnlineUsersChange
+        })
+        act(() => {
+            onlineUsersChangeCall[1](clientDataIoEventResponseData)
+        })
+
+        // write a chat message
+        const chatInput = component
+            .getByTestId("chat-input-cont")
+            .querySelector("input")
+        chatInput.value = "This is a chat message"
+        const sendChatButton = component.getByText(/send/i)
+        fireEvent.click(sendChatButton)
+
+        // chat message should be sent
+        expect(socket.emit).toBeCalledWith(IOEvents.UserChat, {
+            data: {
+                roomId: "desksRoom",
+                message: "This is a chat message",
+            },
+        })
+
+        // chat input should be cleared
+        expect(chatInput.value).toBeFalsy()
+
+        // if chat message is recieved
+        const userChatIoEventResponseData: IOEventResponseData<IOEventChatMessageData> = {
+            data: {
+                type: ChatMessageType.UserMessage,
+                roomId: "desksRoom",
+                username: "another@site.com",
+                userColor: UserColor.Cyan,
+                message: "This is from another user",
+                time: 1592769947685,
+            },
+        }
+        const userChatCall = socket.on.mock.calls.find((call) => {
+            return call[0] === IOEvents.UserChat
+        })
+        act(() => {
+            userChatCall[1](userChatIoEventResponseData)
+        })
+
+        // chat message should be in messages list
+        expect(
+            component.getByText("This is from another user")
+        ).toBeInTheDocument()
+    })
 })

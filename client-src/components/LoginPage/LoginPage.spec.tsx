@@ -6,6 +6,17 @@ import { InitialClientData } from "../../../shared-src/models"
 import { validatePassword, validateEmail } from "../../../shared-src/validation"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import { ErrorMessages } from "../../constants/messages"
+import io from "socket.io-client"
+
+const socket = {
+    on: jest.fn(),
+    off: jest.fn(),
+    emit: jest.fn(),
+}
+
+jest.mock("socket.io-client", () => {
+    return () => socket
+})
 
 describe("LoginPage", () => {
     const setUpComponent = (dependencies: Dependencies) => {
@@ -39,6 +50,7 @@ describe("LoginPage", () => {
             form: {
                 submitHtmlForm: jest.fn(),
             },
+            io,
         }
 
         const component = setUpComponent(dependencies)
@@ -136,6 +148,7 @@ describe("LoginPage", () => {
             form: {
                 submitHtmlForm: jest.fn(),
             },
+            io,
         }
 
         const component = setUpComponent(dependencies)
@@ -159,6 +172,7 @@ describe("LoginPage", () => {
             form: {
                 submitHtmlForm: jest.fn(),
             },
+            io,
         }
 
         const component = setUpComponent(dependencies)
@@ -180,6 +194,7 @@ describe("LoginPage", () => {
             form: {
                 submitHtmlForm: jest.fn(),
             },
+            io,
         }
 
         const component = setUpComponent(dependencies)
@@ -222,6 +237,7 @@ describe("LoginPage", () => {
             form: {
                 submitHtmlForm: jest.fn(),
             },
+            io,
         }
 
         const component = setUpComponent(dependencies)

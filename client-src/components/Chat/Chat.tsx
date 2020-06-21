@@ -68,7 +68,7 @@ export function Chat({ messages, onChatMessageSubmitHandler }: ChatProps) {
             <form className={styles.form} onSubmit={onChatMessageSubmitHandler}>
                 <hr className={styles.divider} />
 
-                <div className={styles.chatInput}>
+                <div className={styles.chatInput} data-testid="chat-input-cont">
                     <TextInput name="message" autocomplete={"off"} />
                 </div>
                 <Button

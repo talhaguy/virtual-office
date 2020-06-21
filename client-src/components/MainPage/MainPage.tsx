@@ -40,8 +40,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     const firstRenderRef = useRef(true)
 
     useEffect(() => {
-        console.log("USE EFFECT!!!!!!!")
-
         if (isLoggedIn && firstRenderRef.current) {
             socketRef.current = io()
 
@@ -51,7 +49,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
         socketRef.current.on(
             IOEvents.OnlineUsersChange,
             (ioEventResponseData: IOEventResponseData<ClientData>) => {
-                console.log("OnlineUsersChange")
                 const foundCurrentUser = ioEventResponseData.data.onlineUsers.find(
                     (user) => user.username === currentUser.username
                 )
@@ -66,8 +63,6 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
             (
                 ioEventResponseData: IOEventResponseData<IOEventChatMessageData>
             ) => {
-                console.log("this is chat messsss")
-                console.log(ioEventResponseData)
                 const newMessages = messages.slice()
                 newMessages.push(ioEventResponseData.data)
                 setMessages(newMessages)

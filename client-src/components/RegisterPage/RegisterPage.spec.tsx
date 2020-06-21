@@ -6,6 +6,17 @@ import { validatePassword, validateEmail } from "../../../shared-src/validation"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import { ErrorMessages } from "../../constants/messages"
 import { RegisterPage } from "./RegisterPage"
+import io from "socket.io-client"
+
+const socket = {
+    on: jest.fn(),
+    off: jest.fn(),
+    emit: jest.fn(),
+}
+
+jest.mock("socket.io-client", () => {
+    return () => socket
+})
 
 describe("RegisterPage", () => {
     const setUpComponent = (dependencies: Dependencies) => {
@@ -39,6 +50,7 @@ describe("RegisterPage", () => {
             form: {
                 submitHtmlForm: jest.fn(),
             },
+            io,
         }
 
         const component = setUpComponent(dependencies)
@@ -207,6 +219,7 @@ describe("RegisterPage", () => {
             form: {
                 submitHtmlForm: jest.fn(),
             },
+            io,
         }
 
         const component = setUpComponent(dependencies)
