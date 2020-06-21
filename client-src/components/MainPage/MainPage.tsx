@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
-import io from "socket.io-client"
+import React, { useState, useEffect, useRef, useContext } from "react"
 
 import { LogoutForm } from "../LogoutForm"
 import { Chat } from "../Chat"
@@ -20,6 +19,7 @@ import { IOEvents } from "../../../shared-src/constants"
 import * as styles from "./MainPage.module.css"
 import { Panel, PanelType, PanelTitlePosition } from "../Panel"
 import { Button, ButtonSize } from "../Button"
+import { DependenciesContext } from "../../DependenciesContext"
 
 interface MainPageProps {
     username: string
@@ -27,6 +27,7 @@ interface MainPageProps {
 }
 
 export function MainPage({ username, isLoggedIn }: MainPageProps) {
+    const { io } = useContext(DependenciesContext)
     const [currentUser, setCurrentUser] = useState<OnlineUser>({
         username,
         roomId: "desksRoom",
@@ -39,6 +40,8 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
     const firstRenderRef = useRef(true)
 
     useEffect(() => {
+        console.log("USE EFFECT!!!!!!!")
+
         if (isLoggedIn && firstRenderRef.current) {
             socketRef.current = io()
 
@@ -128,6 +131,7 @@ export function MainPage({ username, isLoggedIn }: MainPageProps) {
                                         gridRowStart: room.gridRowStart,
                                         gridRowEnd: room.gridRowEnd,
                                     }}
+                                    data-testid={`room-${room.id}`}
                                 >
                                     <Panel
                                         extraClassNames={

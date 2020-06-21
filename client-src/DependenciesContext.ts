@@ -15,6 +15,7 @@ export interface Dependencies {
     form: {
         submitHtmlForm: SubmitHtmlFormFunction
     }
+    io: SocketIOClientStatic
 }
 
 export const DependenciesContext = React.createContext<Dependencies>(null)

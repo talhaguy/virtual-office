@@ -1,5 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import io from "socket.io-client"
 
 import { InitialClientData } from "../shared-src/models"
 import { validateEmail, validatePassword } from "../shared-src/validation"
@@ -20,6 +21,7 @@ const dependencies: Dependencies = {
     form: {
         submitHtmlForm,
     },
+    io,
 }
 
 ReactDOM.render(
